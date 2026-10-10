@@ -10,11 +10,11 @@ LiteLLM ships new releases regularly with new provider support, performance impr
 
 ## Latest Release
 
-### [v1.100.0: Access Group Budgets, Together AI Sync & Custom Router Tiers](/release_notes/v1.100.0/v1-100-0)
+### [v1.104.0: Claude Opus 5.5, GPT-6, Master Key Enforcement & Team Routing Controls](/release_notes/v1.104.0/v1-104-0)
 
-_September 6, 2026_
+_October 3, 2026_
 
-Model access groups can carry one shared budget enforced across every deployment in the group, tracked in a per-window spend table, settable from the dashboard, and with opt-in rollover of unused headroom; Together AI moves onto a dedicated config with `api.together.ai` as the default endpoint, `reasoning_effort` mapped per model class, cache-read pricing, and a daily sync that keeps the registry priced against the live serverless catalog; the complexity router's tier set becomes operator-defined end to end, with custom classifier tiers, a preview of the classifier prompt, heuristic-first chaining, a dry run on `/auto_router/test_routing`, and classifier cost counted in savings; the MCP gateway gains RFC 7662 `/introspect` for session tokens, RS256-signed session tokens, bulk import of Anthropic MCP connectors, and enforcement of toolsets attached to teams, organizations and users; Grounding with Bing Search arrives as a search provider alongside 242 new models, including `gemini-3.5-transcribe`, the xAI `grok-4.20` family, 24 Mistral entries, RunwayML `gen4.5` and the Seedance 2 family; and `GET /public/v1/model_hub` exposes a paginated public listing of the models the proxy serves. This stable also carries the Docker base image fix for glibc 2.44 that landed after the rc.1 cut.
+Claude Opus 5.5 and GPT-6 on day one, Eden AI and Nadir providers, master key enforcement, team routing controls, and the LiteAdmin assistant. stdio MCP servers are now off by default. Review the Breaking Changes before upgrading
 
 ---
 
@@ -22,6 +22,10 @@ Model access groups can carry one shared budget enforced across every deployment
 
 | Version                             | Date         | Highlights                                                 |
 | ----------------------------------- | ------------ | ---------------------------------------------------------- |
+| [v1.104.0](/release_notes/v1.104.0/v1-104-0) | Oct 3, 2026  | Claude Opus 5.5 and GPT-6, master key enforcement, stdio MCP off by default |
+| [v1.103.0](/release_notes/v1.103.0/v1-103-0) | Sep 27, 2026 | Config file ownership, Fuse and Capability routing, gateway hardening |
+| [v1.102.0](/release_notes/v1.102.0/v1-102-0) | Sep 19, 2026 | Auto router controls, native OCR, gateway reliability |
+| [v1.101.0](/release_notes/v1.101.0/v1-101-0) | Sep 14, 2026 | Heuristic auto router, semantic MCP tool search, off-peak pricing |
 | [v1.100.0](/release_notes/v1.100.0/v1-100-0) | Sep 6, 2026  | Access group budgets, Together AI overhaul, custom auto-router tiers |
 | [v1.99.0](/release_notes/v1.99.0/v1-99-0)   | Sep 1, 2026  | Dark mode, CLI OAuth login, end-to-end batch billing       |
 | [v1.98.0](/release_notes/v1.98.0/v1-98-0)   | Aug 22, 2026 | Provisioned throughput billing, auto-router shadow evals, callable routing groups |

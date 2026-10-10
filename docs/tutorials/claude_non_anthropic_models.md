@@ -53,7 +53,7 @@ Set your environment variables:
 
 ```bash
 export OPENAI_API_KEY="your-openai-api-key"
-export LITELLM_MASTER_KEY="sk-1234567890"  # Generate a secure key
+export LITELLM_MASTER_KEY="sk-<paste-a-long-random-key>"  # Generate a secure key
 ```
 
 </TabItem>
@@ -72,7 +72,7 @@ Set your environment variables:
 
 ```bash
 export GEMINI_API_KEY="your-gemini-api-key"
-export LITELLM_MASTER_KEY="sk-1234567890"  # Generate a secure key
+export LITELLM_MASTER_KEY="sk-<paste-a-long-random-key>"  # Generate a secure key
 ```
 
 </TabItem>
@@ -101,7 +101,7 @@ Set your environment variables:
 
 ```bash
 export VERTEX_FILE_PATH_ENV_VAR="/path/to/service_account.json"
-export LITELLM_MASTER_KEY="sk-1234567890"  
+export LITELLM_MASTER_KEY="sk-<paste-a-long-random-key>"  
 ```
 
 </TabItem>
@@ -123,7 +123,7 @@ Set your environment variables:
 ```bash
 export AZURE_API_KEY="your-azure-api-key"
 export AZURE_API_BASE="https://your-resource.openai.azure.com"
-export LITELLM_MASTER_KEY="sk-1234567890"
+export LITELLM_MASTER_KEY="sk-<paste-a-long-random-key>"
 ```
 
 </TabItem>
@@ -255,7 +255,7 @@ On startup, Claude Code will call `GET /v1/models` against your `ANTHROPIC_BASE_
 
 and select any LiteLLM-managed model (`{{openai_large}}`, `{{gemini_flash}}`, `anthropic-vertex`, etc.) to switch without restarting the session.
 
-:::info Requirements
+:::info[Requirements]
 
 - Claude Code **v2.1.129** or later.
 - `ANTHROPIC_BASE_URL` must point at a gateway that serves the Anthropic Messages API format. LiteLLM does this on `/v1/messages`.
@@ -263,26 +263,31 @@ and select any LiteLLM-managed model (`{{openai_large}}`, `{{gemini_flash}}`, `a
 
 :::
 
-### 7. Sync the Proxy Model List with `--sync-models`
+### 7. Fill the Picker from the `lite` CLI with `--sync-models`
 
-Use `lite claude --sync-models` to pass the proxy's model list to Claude Code through its `--settings` `modelPicker` option
+If you launch Claude Code through the [LiteLLM proxy CLI](../proxy/management_cli.md), `lite claude --sync-models` reads your proxy's `/v1/models` with your key and hands every model to Claude Code as a one-session [`modelPicker` setting](https://docs.claude.com/en/docs/claude-code/settings) through `--settings`. The `/model` picker then lists each proxy model under its own id, so a non-Anthropic model needs no claude-flavored name.
 
 ```bash
 lite claude --sync-models
 ```
 
-You can enable the same behavior with `LITELLM_CLAUDE_SYNC_MODELS=1` before running `lite claude`
+The same switch as an environment variable, for a shell profile:
 
 ```bash
 export LITELLM_CLAUDE_SYNC_MODELS=1
 lite claude
 ```
 
-When this mode is enabled, the `-claude-compatible` naming workaround is unnecessary because the proxy model ids are added directly to the `/model` picker
+Each row is labeled with the model's `display_name` when one is set (section 8), otherwise with its id. In this mode the CLI leaves `CLAUDE_CODE_ENABLE_GATEWAY_MODEL_DISCOVERY` unset, so each model gets one row instead of a second **From gateway** copy; export the variable yourself if you want both. If the proxy cannot be reached or returns no models, `lite claude` prints a warning and starts Claude Code with its built-in picker.
 
-Gateway model discovery is not enabled by default in this mode, so the picker does not receive duplicate model rows
+:::info[Requirements]
 
-:::tip Surface only specific models
+- Claude Code **v2.1.242** or later, which is where the `modelPicker` setting arrived.
+- The `lite` CLI from the LiteLLM release that ships `--sync-models`. Older CLIs forward the flag to Claude Code, which rejects it.
+
+:::
+
+:::tip[Surface only specific models]
 
 If you only want a subset of your LiteLLM models to show up in the `/model` picker, issue a [virtual key](../proxy/virtual_keys) scoped to those models and use that key as `ANTHROPIC_AUTH_TOKEN`. `/v1/models` will only return models the key can access.
 
