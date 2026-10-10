@@ -42,8 +42,9 @@ general_settings:
   database_url: os.environ/DATABASE_URL
 ```
 
-Requests pass through unchanged, including variant suffixes and the `models` and `transforms`
-fields, and LiteLLM records the cost OpenRouter reports. Nothing else is needed for step 1 of
+Requests pass through unchanged, including variant suffixes (`:nitro`), `openrouter/auto`, and
+the `models`, `provider`, `transforms`, `plugins`, `reasoning`, and `usage` fields, and LiteLLM
+records the cost OpenRouter reports. Nothing else is needed for step 1 of
 the migration. If the user only wants to expose certain models, list them as separate entries
 with `model_name: <id>` and `model: openrouter/<id>` instead of the wildcard, and say so.
 
@@ -71,7 +72,13 @@ router_settings:
     - {"<OpenRouter ID the app sends>": ["<name>-openrouter"]}
 ```
 
-3. Ask for the credential variable and any provider-specific settings: `api_base` and
+3. If the app also sends a `models` array for that call, ask whether those models should stay
+   in the chain after the OpenRouter copy; if so, append them to the same fallbacks list. They
+   are served by the `"*"` wildcard, so they need no deployment of their own. If its
+   `provider.order` names a provider you are not adding directly (such as `amazon-bedrock`),
+   tell the user that provider is no longer in the chain, and offer to add it as a direct
+   deployment.
+4. Ask for the credential variable and any provider-specific settings: `api_base` and
    `api_version` for Azure, `aws_region_name` and AWS credentials for Bedrock, `vertex_project`
    and `vertex_location` for Vertex.
 
@@ -97,7 +104,13 @@ user which fields their code sends to it and what replaces them:
 | `HTTP-Referer`, `X-OpenRouter-Title` | `x-litellm-tags` header for spend attribution |
 
 Requests that stay on the wildcard keep working with the OpenRouter fields, so only change
-code paths that hit direct models. Show the diff before editing any application code.
+request fields on calls that hit direct models. Settings on the client object, such as the
+base URL, key, and `HTTP-Referer` / `X-OpenRouter-Title` default headers, apply to every call;
+change them once on the client. Show the diff before editing any application code.
+
+Direct providers mostly ignore OpenRouter fields rather than rejecting them, but remove them
+anyway so the code says what actually happens: on a direct model, `models` and `provider` no
+longer do anything, and fallbacks come only from `router_settings.fallbacks`.
 
 ## 6. Keys and teams
 
@@ -139,13 +152,25 @@ curl -s -i $LITELLM_PROXY_URL/v1/chat/completions \
   -d '{"model": "<model ID the app sends>", "messages": [{"role": "user", "content": "ping"}]}'
 ```
 
-Show the user each response with its `x-litellm-model-group`, `x-litellm-model-api-base`, and
-`x-litellm-response-cost` headers, which confirm whether a request went direct or through
-OpenRouter. Report any ID that fails rather than renaming it.
+Send these with the app's virtual key from step 6, not the master key, so the key's model
+access and limits are exercised too. Show the user each response with its
+`x-litellm-model-group`, `x-litellm-model-api-base`, and `x-litellm-response-cost` headers,
+which confirm whether a request went direct or through OpenRouter. Report any ID that fails
+rather than renaming it.
 
 ## 8. Hand back
 
-Tell the user the two changes each client needs: the base URL becomes the LiteLLM gateway URL
-(instead of `https://openrouter.ai/api/v1`), and the API key becomes the virtual key from
-step 6. Model IDs stay the same. Point them at
+Tell the user the changes each client needs: the base URL becomes the LiteLLM gateway URL
+(instead of `https://openrouter.ai/api/v1`), the API key becomes the virtual key from step 6 (read from an
+environment variable such as `LITELLM_API_KEY`, never hardcoded),
+and `HTTP-Referer` / `X-OpenRouter-Title` become `x-litellm-tags` if they used them for
+attribution. Model IDs stay the same.
+
+Then, under a heading "Not carried over", list everything that now behaves differently,
+including what you were told not to change. Always cover: models moved direct are billed to, rate-limited by, and governed by the
+user's own provider account and its data terms instead of OpenRouter's; credit limits are now
+the virtual key's `max_budget`; providers dropped from a `provider.order` chain; and OpenRouter
+fields removed from direct calls. Keep `LITELLM_SALT_KEY` with the other secrets; it must
+survive restarts. To roll back, point the client's base URL and key back at OpenRouter and restore
+any OpenRouter fields you removed from direct calls; nothing else in the app changed. Point them at
 https://docs.litellm.ai/docs/migrate/openrouter#feature-mapping for anything not covered here.
