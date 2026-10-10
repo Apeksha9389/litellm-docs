@@ -278,7 +278,7 @@ export LITELLM_CLAUDE_SYNC_MODELS=1
 lite claude
 ```
 
-Each row is labeled with the model's `display_name` when one is set (section 8), otherwise with its id. In this mode the CLI leaves `CLAUDE_CODE_ENABLE_GATEWAY_MODEL_DISCOVERY` unset, so each model gets one row instead of a second **From gateway** copy; export the variable yourself if you want both. If the proxy cannot be reached or returns no models, `lite claude` prints a warning and starts Claude Code with its built-in picker.
+Each row is labeled with the model's `display_name` when one is set (section 8), otherwise with its id. Claude Code skips a row whose id its built-in lineup already covers, so a plain `claude-sonnet-5-5` deployment keeps the built-in **Sonnet** row and label. In this mode the CLI leaves `CLAUDE_CODE_ENABLE_GATEWAY_MODEL_DISCOVERY` unset, so each model gets one row instead of a second **From gateway** copy; export the variable yourself if you want both. If the proxy cannot be reached or returns no models, `lite claude` prints a warning and starts Claude Code with its built-in picker.
 
 :::info[Requirements]
 
