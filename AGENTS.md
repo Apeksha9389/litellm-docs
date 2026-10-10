@@ -43,3 +43,7 @@ docker run \
 -p 4000:4000 \
 docker.litellm.ai/berriai/litellm:X.Y.Z
 ```
+
+## Blog posts: tags
+
+Every post under `blog/` takes its frontmatter `tags:` from `blog/tags.yml`; the build fails on any tag that is not listed there (`onInlineTags: throw`). Besides the descriptive tags (provider, model, topic), add the category tags: `new-model` when the post announces a newly supported model or provider (every Day 0 and pricing post), and `api-change` when it adds or changes an endpoint, request or response parameter, SDK surface, or default behavior. A post can carry both. Ordinary engineering write-ups, incident reports, townhalls, partnerships and security notices get neither. The `/blog` page filters on these two tags and the Admin UI reads them from the RSS feed.
