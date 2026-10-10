@@ -265,7 +265,7 @@ and select any LiteLLM-managed model (`{{openai_large}}`, `{{gemini_flash}}`, `a
 
 ### 7. Fill the Picker from the `lite` CLI with `--sync-models`
 
-If you launch Claude Code through the [LiteLLM proxy CLI](../proxy/management_cli.md), `lite claude --sync-models` reads your proxy's `/v1/models` with your key and hands every model to Claude Code as a one-session [`modelPicker` setting](https://docs.claude.com/en/docs/claude-code/settings) through `--settings`. The `/model` picker then lists each proxy model under its own id, so a non-Anthropic model needs no claude-flavored name.
+If you launch Claude Code through the [LiteLLM proxy CLI](../proxy/management_cli.md), `lite claude --sync-models` reads your proxy's `/v1/models` with your key and hands its chat models to Claude Code as a [`modelPicker` setting](https://docs.claude.com/en/docs/claude-code/settings), written to `~/.litellm/claude_model_picker.json` and passed as `--settings`. The `/model` picker then lists each proxy model under its own id, so a non-Anthropic model needs no claude-flavored name. Embedding, image, audio and rerank deployments stay out of the picker, since Claude Code cannot chat with them.
 
 ```bash
 lite claude --sync-models
@@ -278,7 +278,7 @@ export LITELLM_CLAUDE_SYNC_MODELS=1
 lite claude
 ```
 
-Each row is labeled with the model's `display_name` when one is set (section 8), otherwise with its id. Claude Code skips a row whose id its built-in lineup already covers, so a plain `claude-sonnet-5-5` deployment keeps the built-in **Sonnet** row and label. In this mode the CLI leaves `CLAUDE_CODE_ENABLE_GATEWAY_MODEL_DISCOVERY` unset, so each model gets one row instead of a second **From gateway** copy; export the variable yourself if you want both. If the proxy cannot be reached or returns no models, `lite claude` prints a warning and starts Claude Code with its built-in picker.
+Each row is labeled with the model's `display_name` when one is set (section 8), otherwise with its id, and a model whose input window reaches 1M is listed as `<id>[1m]`, the suffix that opens Claude Code's 1M context. Claude Code skips a row whose id its built-in lineup already covers, so a plain `claude-sonnet-5-5` deployment keeps the built-in **Sonnet** row and label. Your own `--settings` file or JSON is carried into the written document with only `modelPicker` replaced, since Claude Code reads one `--settings` per launch. In this mode the CLI turns `CLAUDE_CODE_ENABLE_GATEWAY_MODEL_DISCOVERY` off for the session, even when `lite configure claude` or `lite up` wrote it into `settings.json`, so each model gets one row instead of a second **From gateway** copy; export the variable yourself if you want both. `lite claude --no-sync-models` turns an exported `LITELLM_CLAUDE_SYNC_MODELS=1` off for one launch, and `--skip-verify` skips the sync along with the key check. If the proxy cannot be reached or lists no chat models, `lite claude` prints a warning and starts Claude Code with its built-in picker.
 
 :::info[Requirements]
 
