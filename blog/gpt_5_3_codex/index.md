@@ -7,7 +7,7 @@ authors:
   - krrish
   - ishaan-alt
 description: "Day 0 support for GPT-5.3-Codex on LiteLLM, including phase parameter handling for Responses API."
-tags: [openai, gpt-5.3-codex, codex, day 0 support]
+tags: [openai, gpt-5.3-codex, codex, day 0 support, new-model]
 hide_table_of_contents: false
 ---
 

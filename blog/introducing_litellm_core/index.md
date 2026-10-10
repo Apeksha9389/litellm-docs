@@ -6,6 +6,7 @@ authors:
   - joshua
 date: 2026-10-08
 image: ./cover.png
+tags: [api-change]
 ---
 
 import CoreHero from './CoreHero';

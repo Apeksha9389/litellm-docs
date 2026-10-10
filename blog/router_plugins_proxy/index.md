@@ -5,7 +5,7 @@ date: 2026-07-17T12:00:00
 authors:
   - krrish
 description: "Router plugins are now live on LiteLLM. Configure a plugin pipeline to determine which models to pick for a given input. Plugins can be chained as well"
-tags: [routing, complexity-router, plugins, proxy, product]
+tags: [routing, complexity-router, plugins, proxy, product, api-change]
 hide_table_of_contents: false
 ---
 

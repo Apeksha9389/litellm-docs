@@ -7,7 +7,7 @@ authors:
   - krrish
   - ishaan-alt
 description: "Guide to Claude Opus 4.5 and advanced features in LiteLLM: Tool Search, Programmatic Tool Calling, and Effort Parameter."
-tags: [anthropic, claude, tool search, programmatic tool calling, effort, advanced features]
+tags: [anthropic, claude, tool search, programmatic tool calling, effort, advanced features, new-model, api-change]
 hide_table_of_contents: false
 ---
 

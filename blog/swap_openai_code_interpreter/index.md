@@ -6,7 +6,7 @@ authors:
   - krrish
 description: "Keep the OpenAI code_interpreter tool in your requests, run the code in your own sandbox. LiteLLM intercepts the tool call and routes it to E2B or OpenSandbox; no client changes."
 image: ./hero.png
-tags: [code interpreter, sandbox, e2b, opensandbox, agents]
+tags: [code interpreter, sandbox, e2b, opensandbox, agents, api-change]
 hide_table_of_contents: false
 ---
 

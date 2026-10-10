@@ -7,7 +7,7 @@ authors:
   - krrish
   - ishaan-alt
 description: "Day 0 support for MiniMax-M2.5 on LiteLLM"
-tags: [minimax, M2.5, llm]
+tags: [minimax, M2.5, llm, new-model]
 hide_table_of_contents: false
 ---
 

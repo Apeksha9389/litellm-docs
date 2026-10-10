@@ -4,7 +4,7 @@ title: "Day 0 Support: GPT-5.4-mini and GPT-5.4-nano"
 date: 2026-03-17T10:00:00
 authors: [sameer, krrish, ishaan]
 description: "GPT-5.4-mini and GPT-5.4-nano model support in LiteLLM"
-tags: [openai, gpt-5.4-mini, gpt-5.4-nano, completion]
+tags: [openai, gpt-5.4-mini, gpt-5.4-nano, completion, new-model]
 hide_table_of_contents: false
 ---
 

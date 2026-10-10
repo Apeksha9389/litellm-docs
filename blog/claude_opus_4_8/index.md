@@ -7,7 +7,7 @@ authors:
   - krrish
   - ishaan-alt
 description: "Day 0 support for Claude Opus 4.8 on the LiteLLM AI Gateway. Use it across Anthropic, Azure, Vertex AI, and Bedrock."
-tags: [anthropic, claude, opus 4.8, day 0 support]
+tags: [anthropic, claude, opus 4.8, day 0 support, new-model]
 hide_table_of_contents: false
 ---
 

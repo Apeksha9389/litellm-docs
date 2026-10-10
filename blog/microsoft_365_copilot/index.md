@@ -6,7 +6,7 @@ authors:
   - yassin
 image: ./cover.png
 description: "Use Microsoft 365 Copilot from your applications through LiteLLM, with access to your Microsoft 365 work data."
-tags: [announcement, ai-gateway]
+tags: [announcement, ai-gateway, new-model, api-change]
 hide_table_of_contents: true
 ---
 

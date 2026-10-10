@@ -5,7 +5,7 @@ date: 2026-04-24T10:00:00
 authors:
   - sameer
 description: "Use generally available gemini-embedding-2 for multimodal embeddings on LiteLLM via Gemini API and Vertex AI—the same flows as preview, stable model id."
-tags: [gemini, embeddings, multimodal, vertex ai]
+tags: [gemini, embeddings, multimodal, vertex ai, new-model, api-change]
 hide_table_of_contents: false
 ---
 

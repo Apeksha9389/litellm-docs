@@ -8,7 +8,7 @@ authors:
   - ishaan-alt
 description: "Day 0 support for the GPT-5.6 family (Sol, Terra, and Luna) on LiteLLM."
 image: ./hero.png
-tags: [openai, gpt-5.6, gpt-5.6-sol, gpt-5.6-terra, gpt-5.6-luna, completion, day 0 support]
+tags: [openai, gpt-5.6, gpt-5.6-sol, gpt-5.6-terra, gpt-5.6-luna, completion, day 0 support, new-model]
 hide_table_of_contents: false
 ---
 

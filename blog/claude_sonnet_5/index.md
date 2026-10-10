@@ -8,7 +8,7 @@ authors:
   - ishaan-alt
 description: "Day 0 support for Claude Sonnet 5 on the LiteLLM AI Gateway. Use it across Anthropic, Azure, Vertex AI, and Bedrock."
 image: /img/litellm_claude_sonnet_5_announcement.png
-tags: [anthropic, claude, sonnet 5, day 0 support]
+tags: [anthropic, claude, sonnet 5, day 0 support, new-model]
 hide_table_of_contents: false
 ---
 

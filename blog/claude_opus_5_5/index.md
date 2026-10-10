@@ -8,7 +8,7 @@ authors:
   - kerry
 description: "Day 0 support for Claude Opus 5.5 on the LiteLLM AI Gateway. Use it across Anthropic, Bedrock, Gemini Enterprise Agent Platform, and Azure."
 image: /img/litellm_claude_opus_5_5_announcement.png
-tags: [anthropic, claude, opus 5.5, day 0 support]
+tags: [anthropic, claude, opus 5.5, day 0 support, new-model]
 hide_table_of_contents: false
 ---
 

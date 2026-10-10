@@ -8,7 +8,7 @@ authors:
   - mateo
   - kerry
 description: "Day 0 support for Gemini Nano Banana 2.1 on LiteLLM, on Google AI Studio and Gemini Enterprise Agent Platform, with image output at half Nano Banana 2's price."
-tags: [gemini, gemini enterprise agent platform, nano banana, image generation, day 0 support]
+tags: [gemini, gemini enterprise agent platform, nano banana, image generation, day 0 support, new-model]
 hide_table_of_contents: false
 ---
 

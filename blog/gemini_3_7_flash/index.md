@@ -8,7 +8,7 @@ authors:
   - ishaan-alt
 description: "day 0 support for Gemini 3.7 Flash on LiteLLM, with launch pricing tracked across Google AI Studio and Vertex AI."
 image: ./hero.png
-tags: [gemini, gemini-3.7-flash, day 0 support, llms]
+tags: [gemini, gemini-3.7-flash, day 0 support, llms, new-model]
 hide_table_of_contents: false
 ---
 

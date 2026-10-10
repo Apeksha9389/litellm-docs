@@ -7,7 +7,7 @@ authors:
   - krrish
   - ishaan-alt
 description: "Common questions and best practices for using gemini-3-pro-preview with LiteLLM Proxy and SDK."
-tags: [gemini, day 0 support, llms]
+tags: [gemini, day 0 support, llms, new-model]
 hide_table_of_contents: false
 ---
 

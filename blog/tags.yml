@@ -1,0 +1,512 @@
+# Allowed blog tags. The build fails on a tag that is not listed here (onInlineTags: throw).
+# new-model and api-change are the category tags the Admin UI Home page filters on.
+
+new-model:
+  label: new-model
+  permalink: /new-model
+  description: A newly supported model or provider
+api-change:
+  label: api-change
+  permalink: /api-change
+  description: A new or changed endpoint, parameter or default behavior
+"M2.5":
+  label: M2.5
+  permalink: /m2-5
+adaptive:
+  label: adaptive
+  permalink: /adaptive
+admin-ui:
+  label: admin-ui
+  permalink: /admin-ui
+"advanced features":
+  label: 'advanced features'
+  permalink: /advanced-features
+agent-tracing:
+  label: agent-tracing
+  permalink: /agent-tracing
+agents:
+  label: agents
+  permalink: /agents
+ai-gateway:
+  label: ai-gateway
+  permalink: /ai-gateway
+akto:
+  label: akto
+  permalink: /akto
+announcement:
+  label: announcement
+  permalink: /announcement
+anthropic:
+  label: anthropic
+  permalink: /anthropic
+architecture:
+  label: architecture
+  permalink: /architecture
+auth:
+  label: auth
+  permalink: /auth
+auto-router:
+  label: auto-router
+  permalink: /auto-router
+bedrock:
+  label: bedrock
+  permalink: /bedrock
+benchmarks:
+  label: benchmarks
+  permalink: /benchmarks
+budgets:
+  label: budgets
+  permalink: /budgets
+caching:
+  label: caching
+  permalink: /caching
+case-study:
+  label: case-study
+  permalink: /case-study
+characters:
+  label: characters
+  permalink: /characters
+ci-cd:
+  label: ci-cd
+  permalink: /ci-cd
+claude:
+  label: claude
+  permalink: /claude
+"claude haiku":
+  label: 'claude haiku'
+  permalink: /claude-haiku
+claude-code:
+  label: claude-code
+  permalink: /claude-code
+"code interpreter":
+  label: 'code interpreter'
+  permalink: /code-interpreter
+codex:
+  label: codex
+  permalink: /codex
+completion:
+  label: completion
+  permalink: /completion
+complexity-router:
+  label: complexity-router
+  permalink: /complexity-router
+compliance:
+  label: compliance
+  permalink: /compliance
+compression:
+  label: compression
+  permalink: /compression
+context:
+  label: context
+  permalink: /context
+cost:
+  label: cost
+  permalink: /cost
+cost-optimization:
+  label: cost-optimization
+  permalink: /cost-optimization
+customer-story:
+  label: customer-story
+  permalink: /customer-story
+dashscope:
+  label: dashscope
+  permalink: /dashscope
+database:
+  label: database
+  permalink: /database
+"day 0 support":
+  label: 'day 0 support'
+  permalink: /day-0-support
+docker:
+  label: docker
+  permalink: /docker
+e2b:
+  label: e2b
+  permalink: /e2b
+effort:
+  label: effort
+  permalink: /effort
+elasticache:
+  label: elasticache
+  permalink: /elasticache
+embeddings:
+  label: embeddings
+  permalink: /embeddings
+engineering:
+  label: engineering
+  permalink: /engineering
+evals:
+  label: evals
+  permalink: /evals
+"fable 5":
+  label: 'fable 5'
+  permalink: /fable-5
+"fable 5.1":
+  label: 'fable 5.1'
+  permalink: /fable-5-1
+fastapi:
+  label: fastapi
+  permalink: /fastapi
+finops:
+  label: finops
+  permalink: /finops
+fireworks:
+  label: fireworks
+  permalink: /fireworks
+gemini:
+  label: gemini
+  permalink: /gemini
+"gemini enterprise agent platform":
+  label: 'gemini enterprise agent platform'
+  permalink: /gemini-enterprise-agent-platform
+"gemini-3.7-flash":
+  label: gemini-3.7-flash
+  permalink: /gemini-3-7-flash
+"gemini-3.8-flash":
+  label: gemini-3.8-flash
+  permalink: /gemini-3-8-flash
+"gemini-3.8-flash-tts":
+  label: gemini-3.8-flash-tts
+  permalink: /gemini-3-8-flash-tts
+getting-started:
+  label: getting-started
+  permalink: /getting-started
+google-ai-studio:
+  label: google-ai-studio
+  permalink: /google-ai-studio
+"gpt-5.3-codex":
+  label: gpt-5.3-codex
+  permalink: /gpt-5-3-codex
+"gpt-5.4":
+  label: gpt-5.4
+  permalink: /gpt-5-4
+"gpt-5.4-mini":
+  label: gpt-5.4-mini
+  permalink: /gpt-5-4-mini
+"gpt-5.4-nano":
+  label: gpt-5.4-nano
+  permalink: /gpt-5-4-nano
+"gpt-5.5":
+  label: gpt-5.5
+  permalink: /gpt-5-5
+"gpt-5.5-pro":
+  label: gpt-5.5-pro
+  permalink: /gpt-5-5-pro
+"gpt-5.6":
+  label: gpt-5.6
+  permalink: /gpt-5-6
+"gpt-5.6-luna":
+  label: gpt-5.6-luna
+  permalink: /gpt-5-6-luna
+"gpt-5.6-sol":
+  label: gpt-5.6-sol
+  permalink: /gpt-5-6-sol
+"gpt-5.6-terra":
+  label: gpt-5.6-terra
+  permalink: /gpt-5-6-terra
+gpt-6:
+  label: gpt-6
+  permalink: /gpt-6
+gpt-6-astra:
+  label: gpt-6-astra
+  permalink: /gpt-6-astra
+gpt-6-luna:
+  label: gpt-6-luna
+  permalink: /gpt-6-luna
+gpt-6-sol:
+  label: gpt-6-sol
+  permalink: /gpt-6-sol
+"gpt-6.1-sol":
+  label: gpt-6.1-sol
+  permalink: /gpt-6-1-sol
+grok:
+  label: grok
+  permalink: /grok
+"grok-4.7":
+  label: grok-4.7
+  permalink: /grok-4-7
+guardrails:
+  label: guardrails
+  permalink: /guardrails
+"haiku 5.5":
+  label: 'haiku 5.5'
+  permalink: /haiku-5-5
+harnesses:
+  label: harnesses
+  permalink: /harnesses
+headroom:
+  label: headroom
+  permalink: /headroom
+ideas:
+  label: ideas
+  permalink: /ideas
+"image generation":
+  label: 'image generation'
+  permalink: /image-generation
+incident-report:
+  label: incident-report
+  permalink: /incident-report
+infrastructure:
+  label: infrastructure
+  permalink: /infrastructure
+interactions:
+  label: interactions
+  permalink: /interactions
+jev:
+  label: jev
+  permalink: /jev
+kubernetes:
+  label: kubernetes
+  permalink: /kubernetes
+lap:
+  label: lap
+  permalink: /lap
+lens:
+  label: lens
+  permalink: /lens
+lite-harness:
+  label: lite-harness
+  permalink: /lite-harness
+litellm:
+  label: litellm
+  permalink: /litellm
+litellm-labs:
+  label: litellm-labs
+  permalink: /litellm-labs
+llm:
+  label: llm
+  permalink: /llm
+llms:
+  label: llms
+  permalink: /llms
+load-balancing:
+  label: load-balancing
+  permalink: /load-balancing
+managed-agents:
+  label: managed-agents
+  permalink: /managed-agents
+mcp:
+  label: mcp
+  permalink: /mcp
+memory:
+  label: memory
+  permalink: /memory
+meta:
+  label: meta
+  permalink: /meta
+middleware:
+  label: middleware
+  permalink: /middleware
+mimo:
+  label: mimo
+  permalink: /mimo
+"mimo-v2.6":
+  label: mimo-v2.6
+  permalink: /mimo-v2-6
+minimax:
+  label: minimax
+  permalink: /minimax
+mistral:
+  label: mistral
+  permalink: /mistral
+model-access:
+  label: model-access
+  permalink: /model-access
+multimodal:
+  label: multimodal
+  permalink: /multimodal
+"muse-spark-1.3":
+  label: muse-spark-1.3
+  permalink: /muse-spark-1-3
+"nano banana":
+  label: 'nano banana'
+  permalink: /nano-banana
+observability:
+  label: observability
+  permalink: /observability
+ocr:
+  label: ocr
+  permalink: /ocr
+open-source:
+  label: open-source
+  permalink: /open-source
+openai:
+  label: openai
+  permalink: /openai
+opensandbox:
+  label: opensandbox
+  permalink: /opensandbox
+"opus 4.6":
+  label: 'opus 4.6'
+  permalink: /opus-4-6
+"opus 4.7":
+  label: 'opus 4.7'
+  permalink: /opus-4-7
+"opus 4.8":
+  label: 'opus 4.8'
+  permalink: /opus-4-8
+"opus 5":
+  label: 'opus 5'
+  permalink: /opus-5
+"opus 5.5":
+  label: 'opus 5.5'
+  permalink: /opus-5-5
+packaging:
+  label: packaging
+  permalink: /packaging
+partnership:
+  label: partnership
+  permalink: /partnership
+performance:
+  label: performance
+  permalink: /performance
+plugins:
+  label: plugins
+  permalink: /plugins
+postgres:
+  label: postgres
+  permalink: /postgres
+pricing:
+  label: pricing
+  permalink: /pricing
+prisma:
+  label: prisma
+  permalink: /prisma
+product:
+  label: product
+  permalink: /product
+"programmatic tool calling":
+  label: 'programmatic tool calling'
+  permalink: /programmatic-tool-calling
+prompt-caching:
+  label: prompt-caching
+  permalink: /prompt-caching
+providers:
+  label: providers
+  permalink: /providers
+proxy:
+  label: proxy
+  permalink: /proxy
+quality:
+  label: quality
+  permalink: /quality
+qwen:
+  label: qwen
+  permalink: /qwen
+"qwen3.8-omni-flash":
+  label: qwen3.8-omni-flash
+  permalink: /qwen3-8-omni-flash
+realtime:
+  label: realtime
+  permalink: /realtime
+redis:
+  label: redis
+  permalink: /redis
+release:
+  label: release
+  permalink: /release
+releases:
+  label: releases
+  permalink: /releases
+reliability:
+  label: reliability
+  permalink: /reliability
+responses-api:
+  label: responses-api
+  permalink: /responses-api
+router:
+  label: router
+  permalink: /router
+routing:
+  label: routing
+  permalink: /routing
+rust:
+  label: rust
+  permalink: /rust
+rust-migration:
+  label: rust-migration
+  permalink: /rust-migration
+sandbox:
+  label: sandbox
+  permalink: /sandbox
+scaling:
+  label: scaling
+  permalink: /scaling
+sdk:
+  label: sdk
+  permalink: /sdk
+security:
+  label: security
+  permalink: /security
+"semantic cache":
+  label: 'semantic cache'
+  permalink: /semantic-cache
+semantic-router:
+  label: semantic-router
+  permalink: /semantic-router
+slack:
+  label: slack
+  permalink: /slack
+"sonnet 4.6":
+  label: 'sonnet 4.6'
+  permalink: /sonnet-4-6
+"sonnet 5":
+  label: 'sonnet 5'
+  permalink: /sonnet-5
+"sonnet 5.5":
+  label: 'sonnet 5.5'
+  permalink: /sonnet-5-5
+stability:
+  label: stability
+  permalink: /stability
+supernova:
+  label: supernova
+  permalink: /supernova
+supply-chain:
+  label: supply-chain
+  permalink: /supply-chain
+support:
+  label: support
+  permalink: /support
+testing:
+  label: testing
+  permalink: /testing
+"text to speech":
+  label: 'text to speech'
+  permalink: /text-to-speech
+"tool search":
+  label: 'tool search'
+  permalink: /tool-search
+townhall:
+  label: townhall
+  permalink: /townhall
+tutorial:
+  label: tutorial
+  permalink: /tutorial
+typesafe:
+  label: typesafe
+  permalink: /typesafe
+ui:
+  label: ui
+  permalink: /ui
+valkey:
+  label: valkey
+  permalink: /valkey
+"vertex ai":
+  label: 'vertex ai'
+  permalink: /vertex-ai
+videos:
+  label: videos
+  permalink: /videos
+vllm:
+  label: vllm
+  permalink: /vllm
+webrtc:
+  label: webrtc
+  permalink: /webrtc
+xai:
+  label: xai
+  permalink: /xai
+xiaomi:
+  label: xiaomi
+  permalink: /xiaomi

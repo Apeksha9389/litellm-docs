@@ -7,7 +7,7 @@ authors:
   - krrish
   - ishaan-alt
 description: "LiteLLM now supports creating, retrieving, and managing reusable video characters across multiple video generations."
-tags: [videos, characters, proxy, routing]
+tags: [videos, characters, proxy, routing, api-change]
 hide_table_of_contents: false
 ---
 

@@ -8,7 +8,7 @@ authors:
   - mateo
   - kerry
 description: "Day 0 support for Grok 4.7 on LiteLLM, at the same price as Grok 4.6."
-tags: [xai, grok, grok-4.7, day 0 support]
+tags: [xai, grok, grok-4.7, day 0 support, new-model]
 hide_table_of_contents: false
 ---
 

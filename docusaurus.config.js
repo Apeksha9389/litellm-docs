@@ -227,6 +227,7 @@ const config = {
         include: ['**/index.{md,mdx}'],
         remarkPlugins: [require('./src/remark/raw-markdown')],
         onInlineAuthors: 'throw',
+        onInlineTags: 'throw',
         onUntruncatedBlogPosts: 'throw',
       },
     ],

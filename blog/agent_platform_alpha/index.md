@@ -6,7 +6,7 @@ authors:
   - krrish
   - ishaan-alt
 description: "Spawn sandboxed agent sessions on the LiteLLM Gateway — a control plane for managed agents, now in public preview."
-tags: [product, agents]
+tags: [product, agents, api-change]
 hide_table_of_contents: false
 ---
 

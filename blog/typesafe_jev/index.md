@@ -5,7 +5,7 @@ date: 2026-09-20T10:00:00
 authors:
   - kerry
 description: "TypeSafe AI's Jev lands in LiteLLM v1.103.0-rc: call it through the proxy with logging and cost tracking."
-tags: [typesafe, jev, product]
+tags: [typesafe, jev, product, new-model]
 hide_table_of_contents: false
 ---
 

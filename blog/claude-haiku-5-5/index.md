@@ -8,7 +8,7 @@ authors:
   - kerry
 description: "Claude Haiku 5.5 costs $0.10 per 1M input tokens and $0.50 per 1M output tokens. LiteLLM supports it on day 0 on Anthropic, AWS, Google Cloud and Azure."
 image: /img/litellm_claude_haiku_5_5_announcement.png
-tags: [anthropic, claude, claude haiku, haiku 5.5, pricing, day 0 support]
+tags: [anthropic, claude, claude haiku, haiku 5.5, pricing, day 0 support, new-model]
 hide_table_of_contents: false
 ---
 

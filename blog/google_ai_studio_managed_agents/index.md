@@ -6,7 +6,7 @@ authors:
   - sameer
   - krrish
   - ishaan
-tags: [gemini, managed-agents, interactions, google-ai-studio]
+tags: [gemini, managed-agents, interactions, google-ai-studio, api-change]
 hide_table_of_contents: false
 ---
 

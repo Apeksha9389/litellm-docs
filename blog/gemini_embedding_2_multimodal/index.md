@@ -5,7 +5,7 @@ date: 2025-03-11T10:00:00
 authors:
   - sameer
 description: "Generate embeddings from text, images, audio, video, and PDFs with gemini-embedding-2-preview on LiteLLM via Gemini API (one vector per input, OpenAI-compatible) and Vertex AI (single unified vector per request)."
-tags: [gemini, embeddings, multimodal, vertex ai]
+tags: [gemini, embeddings, multimodal, vertex ai, new-model]
 hide_table_of_contents: false
 ---
 

@@ -7,7 +7,7 @@ authors:
   - krrish
   - ishaan-alt
 description: "Use the LiteLLM proxy to route OpenAI-style WebRTC realtime via HTTP: client_secrets and SDP exchange."
-tags: [realtime, webrtc, proxy, openai]
+tags: [realtime, webrtc, proxy, openai, api-change]
 hide_table_of_contents: false
 ---
 

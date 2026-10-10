@@ -4,7 +4,7 @@ title: "Introducing LiteAgents"
 date: 2026-09-25T10:00:00-07:00
 authors: [moe]
 description: "Switch agent harnesses without rewriting your agent. Keep your tools and model configuration, use native harness controls, and add Temporal when you need durable runs."
-tags: [agents, sdk]
+tags: [agents, sdk, api-change]
 hide_table_of_contents: true
 image: ./hero.png
 ---

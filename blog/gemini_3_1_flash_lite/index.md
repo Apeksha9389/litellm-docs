@@ -7,7 +7,7 @@ authors:
   - krrish
   - ishaan-alt
 description: "Guide to using Gemini 3.1 Flash Lite Preview on LiteLLM Proxy and SDK with day 0 support."
-tags: [gemini, day 0 support, llms, supernova]
+tags: [gemini, day 0 support, llms, supernova, new-model]
 hide_table_of_contents: false
 ---
 

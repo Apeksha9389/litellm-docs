@@ -4,7 +4,7 @@ title: "Introducing LiteAdmin MCP"
 date: 2026-09-23T10:00:00
 authors: [tin]
 description: "Give your agent tools to create keys, add models, and manage budgets with LiteAdmin MCP. Use the same connector through LiteAdmin, our Slack admin agent."
-tags: [mcp, agents, ai-gateway]
+tags: [mcp, agents, ai-gateway, api-change]
 hide_table_of_contents: true
 image: ./hero.png
 ---

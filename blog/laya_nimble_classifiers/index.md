@@ -6,7 +6,7 @@ authors:
   - tin
 description: "Use Laya or Bespoke Nimble to classify Auto Router requests on your own infrastructure. Control where classification runs, which model you serve, and how you provision it."
 image: ./cover.png
-tags: [auto-router, product, ai-gateway]
+tags: [auto-router, product, ai-gateway, new-model]
 hide_table_of_contents: false
 ---
 

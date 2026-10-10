@@ -9,7 +9,7 @@ authors:
   - krrish
   - ishaan-alt
 description: "Day 0 support for OpenAI's GPT-6 Astra on LiteLLM, with pricing, reasoning params, and the Responses API bridge."
-tags: [openai, gpt-6, gpt-6-astra, completion, day 0 support]
+tags: [openai, gpt-6, gpt-6-astra, completion, day 0 support, new-model]
 hide_table_of_contents: false
 ---
 

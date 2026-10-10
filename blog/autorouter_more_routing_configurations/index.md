@@ -7,7 +7,7 @@ authors:
 image: ./hero.png
 description: "The Auto-Router now supports more routing configurations: context-window escalation moves oversized prompts to the cheapest tier that fits them before dispatch, modality routing sends image requests to tiers that can see, classification can run on user turns only, and shadow evaluations can compare several router configs on a team's live traffic."
 keywords: [auto router, complexity router, context window routing, modality routing, capability routing, model routing, shadow evaluation, litellm auto routing, llm gateway]
-tags: [routing, complexity-router, engineering]
+tags: [routing, complexity-router, engineering, api-change]
 hide_table_of_contents: false
 ---
 

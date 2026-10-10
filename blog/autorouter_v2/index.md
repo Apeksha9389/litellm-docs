@@ -5,7 +5,7 @@ date: 2026-07-13T12:00:00
 authors:
   - krrish
 description: "Auto Router v2 folds LiteLLM's complexity, semantic, and adaptive routers into a single router with an LLM classifier, keyword tiers, multi-model pools, and adaptive Thompson sampling."
-tags: [routing, complexity-router, semantic-router, adaptive, product]
+tags: [routing, complexity-router, semantic-router, adaptive, product, api-change]
 hide_table_of_contents: false
 ---
 

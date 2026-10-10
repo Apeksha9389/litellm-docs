@@ -6,7 +6,7 @@ authors:
   - krrish
   - ishaan-alt
 description: "One SDK. Swap between Claude Code, Codex, and Pi AI by changing a string. Pairs with the LiteLLM AI Gateway for keys, budgets, logs, and fallbacks."
-tags: [litellm-labs, product, agents, sdk, ai-gateway]
+tags: [litellm-labs, product, agents, sdk, ai-gateway, api-change]
 hide_table_of_contents: true
 ---
 

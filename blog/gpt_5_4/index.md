@@ -7,7 +7,7 @@ authors:
   - krrish
   - ishaan-alt
 description: "GPT-5.4 model support in LiteLLM"
-tags: [openai, gpt-5.4, completion]
+tags: [openai, gpt-5.4, completion, new-model]
 hide_table_of_contents: false
 ---
 

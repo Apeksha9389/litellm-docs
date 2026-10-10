@@ -10,7 +10,7 @@ authors:
   - ishaan-alt
 description: "Day 0 support for Meta Muse Spark 1.3 on LiteLLM, with cost tracking for both the standard and contributor tiers."
 image: ./hero.png
-tags: [meta, muse-spark-1.3, day 0 support, llms]
+tags: [meta, muse-spark-1.3, day 0 support, llms, new-model]
 hide_table_of_contents: false
 ---
 
