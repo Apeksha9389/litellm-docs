@@ -434,7 +434,7 @@ A few things to know:
 
 - Only managed batches get records, meaning batches created from a file uploaded with `target_model_names`, because the poller only bills those
 - A batch where every line failed still gets an object, holding its error lines
-- `request` is `null` for Anthropic, which has no input file, and when the input file can no longer be read
+- `request` is `null` for Anthropic, which has no input file, for a Vertex AI embeddings line whose `input` list was split into one row per item, and when the input file can no longer be read
 - `request` and `response` are both `null`, with every other field kept, when the key or team that created the batch has message logging turned off in its logging settings, when `litellm.turn_off_message_logging` is on, or when that key or team no longer exists
 - Each object is written in the background once the batch is billed and marked done, one batch at a time on each proxy worker, so a slow or unreachable bucket never holds up billing. A write that fails is logged as an error and is not retried, and the batch stays billed
 - With several proxy instances, the object of an expired, cancelled or all-failed batch can be written by more than one instance. The name is the same, so the bucket keeps one object
