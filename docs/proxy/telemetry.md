@@ -82,7 +82,7 @@ curl -s "http://localhost:4000/telemetry/reports?limit=500" \
   -H "Authorization: Bearer $LITELLM_MASTER_KEY"
 ```
 
-The response holds `reports` plus `next_after` and `next_after_id`. Pass those back as `after` and `after_id` to get the next page, until `next_after` is `null`. Reports older than `LITELLM_TELEMETRY_RETENTION_DAYS` (30 by default) are deleted, and windows with no traffic are not stored
+The response holds `reports` plus `next_after` and `next_after_id`. Pass those back as `after` and `after_id` to get the next page, until `next_after` is `null`. Another worker can commit a report just after a newer one was exported, so when you resume a later export, start a few windows before your last cursor and skip report ids you already have. Reports older than `LITELLM_TELEMETRY_RETENTION_DAYS` (30 by default) are deleted, and windows with no traffic are not stored
 
 ## Settings
 
