@@ -19,9 +19,9 @@ The easiest way to see why is to follow one request. Think of LiteLLM as a littl
 
 ![Every request is a round trip](./img/panel-1.svg)
 
-Your request leaves your app and passes the **gate**, where we check your key, budget and rate limits. The **router** decides which deployment it's headed for. Then it stops at the **cache** ("have we answered this before?"), the **vault** (to fetch the provider's API key from your secret manager), **customs** (to sign the request with AWS, Azure or Google Cloud credentials), the **post office**, where logs and your callbacks (Langfuse, Datadog, and so on) go out, and the **ledger**, where we record what it cost.
+The trip is a loop. On the way out, your request passes through the **gate**, where we check your key, budget and rate limits, and the **router**, which decides which deployment it's headed for and tags the wagon with its API (OCR, Messages, Responses or Chat). Then it stops at the **cache** ("have we answered this before?"), the **vault** (to fetch the provider's API key from your secret manager) and **customs** (to sign the request with AWS, Azure or Google Cloud credentials). Only after those stations does the line split by API and run through the **HTTP tunnel** to the model provider.
 
-Notice where the line splits. The router picks a destination early and tags each wagon with it (OCR, Messages, Responses or Chat), but every request, whatever API it's for, passes every station before it heads down its own line, through the **HTTP tunnel**, to the model provider. So a fast line to the provider doesn't help much if the stations before it are slow.
+The answer comes back around the bottom of the loop. It stops at the **post office**, where logs and your callbacks (Langfuse, Datadog, and so on) go out, and the **ledger**, where we record what it cost, then passes back through the router and the gate to your app. Every request makes every stop, whatever API it's for, so a fast line to the provider doesn't help much if the stations are slow.
 
 Today almost all of that trip is a Python wagon on a dirt road.
 
