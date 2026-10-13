@@ -21,7 +21,7 @@ The easiest way to see why is to follow one request. Think of LiteLLM as a littl
 
 Your request leaves your app and passes the **gate**, where we check your key, budget and rate limits. The **router** decides which deployment it's headed for. Then it stops at the **cache** ("have we answered this before?"), the **vault** (to fetch the provider's API key from your secret manager), **customs** (to sign the request with AWS, Azure or Google Cloud credentials), the **post office**, where logs and your callbacks (Langfuse, Datadog, and so on) go out, and the **ledger**, where we record what it cost.
 
-Notice where the line splits. The router picks a destination early, but every request, whatever API it's for, passes every station before it heads down its own line, through the **HTTP tunnel**, to the model provider. So a fast line to the provider doesn't help much if the stations before it are slow.
+Notice where the line splits. The router picks a destination early and tags each wagon with it (OCR, Messages, Responses or Chat), but every request, whatever API it's for, passes every station before it heads down its own line, through the **HTTP tunnel**, to the model provider. So a fast line to the provider doesn't help much if the stations before it are slow.
 
 Today almost all of that trip is a Python wagon on a dirt road.
 
