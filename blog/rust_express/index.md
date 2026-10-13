@@ -19,7 +19,9 @@ The easiest way to see why is to follow one request. Think of LiteLLM as a littl
 
 ![Every request is a round trip](./img/panel-1.svg)
 
-Your request leaves your app and passes through the **gate**, where we check your key, budget and rate limits. The **router** picks which deployment to send it to. On the way out it stops at the **cache** ("have we answered this before?"), the **vault** (to fetch the provider's API key from your secret manager) and **customs** (to sign the request with AWS, Azure or Google Cloud credentials). Then it goes through the **HTTP tunnel** to the model provider. On the way back it stops at the **post office**, where logs and your callbacks (Langfuse, Datadog, and so on) go out, and the **ledger**, where we record what it cost.
+Your request leaves your app and passes the **gate**, where we check your key, budget and rate limits. The **router** decides which deployment it's headed for. Then it stops at the **cache** ("have we answered this before?"), the **vault** (to fetch the provider's API key from your secret manager), **customs** (to sign the request with AWS, Azure or Google Cloud credentials), the **post office**, where logs and your callbacks (Langfuse, Datadog, and so on) go out, and the **ledger**, where we record what it cost.
+
+Notice where the line splits. The router picks a destination early, but every request, whatever API it's for, passes every station before it heads down its own line, through the **HTTP tunnel**, to the model provider. So a fast line to the provider doesn't help much if the stations before it are slow.
 
 Today almost all of that trip is a Python wagon on a dirt road.
 
@@ -37,9 +39,9 @@ Laying Rust track isn't enough on its own, because of what happens when a Rust t
 
 ![Two kinds of station](./img/panel-3.svg)
 
-At a Python station the train has to stop. Every crate comes off the train and gets repacked into a box Python can handle, and a wagon hauls it up the dirt road to the station. Then it waits, comes back, gets repacked into crates and goes back on the train. That isn't just a cartoon: it's roughly what happens to your request's data each time Rust hands it to a Python service and takes it back.
+Python stations sit off the line, at the end of a little road. At a Python station the train has to stop. Every crate comes off the train and gets repacked into a box Python can handle, and a wagon hauls it up the dirt road to the station. Then it waits, comes back, gets repacked into crates and goes back on the train. That isn't just a cartoon: it's roughly what happens to your request's data each time Rust hands it to a Python service and takes it back.
 
-A Rust station sits right on the track. The train rolls underneath and the work happens on the cargo where it is, with no unloading.
+A Rust station sits right on the track. The train rolls through it and the work happens on the cargo where it is, with no unloading.
 
 ## Where the track is today
 
@@ -61,7 +63,7 @@ OCR shows what this means in practice. On one CPU, the Rust path handled **1.5x 
 
 In June we said Messages and Chat completions would be on Rust by September 1, and the router by September 15. We missed those dates.
 
-The plan then was to lay Rust track for the main line only: Rust would translate requests and responses, and Python would keep running every station. Once we started, we found that even the smallest stretch of track needs the stations. One provider's translation for one route still needs the cache, the secret manager, logging and callbacks. So we went back and started rebuilding the stations first: cloud credentials and the HTTP client are done, and cache, secrets and logging are underway. That is slower to show up in a benchmark, but it is the work that makes real requests fast.
+The plan then was to lay Rust track only on the API lines after the split: Rust would translate requests and responses, and Python would keep running every station. Once we started, we found that even the smallest stretch of track needs the stations. One provider's translation for one route still needs the cache, the secret manager, logging and callbacks. So we went back and started rebuilding the stations first: cloud credentials and the HTTP client are done, and cache, secrets and logging are underway. That is slower to show up in a benchmark, but it is the work that makes real requests fast.
 
 ## Next: finish the lines and open the stations
 
