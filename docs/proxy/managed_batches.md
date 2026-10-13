@@ -423,7 +423,7 @@ Each line of the object is one record:
 | `batch_id` | The batch id you got back from `POST /v1/batches` |
 | `custom_id` | The `custom_id` from your input file, or the `recordId` for Bedrock |
 | `status` | `success` when the provider answered the request, `failure` when it rejected it |
-| `request` | Your input line as the provider holds it: the line you uploaded for OpenAI, Azure and Mistral, the converted line with `recordId` and `modelInput` for Bedrock |
+| `request` | Your input line as the provider holds it: the line you uploaded for OpenAI, Azure and Mistral, the converted line with `recordId` and `modelInput` for Bedrock, and the converted line with `request` for Vertex AI, which carries your `custom_id` in its labels |
 | `response` | The provider's output or error line, exactly as the provider wrote it |
 | `usage` | That line's tokens, `null` for a failed line |
 | `response_cost` | That line's cost at the deployment's batch rates, `0` for a failed line. The records of a batch add up to the cost row's `spend` |
