@@ -436,7 +436,9 @@ A few things to know:
 - A batch where every line failed still gets an object, holding its error lines
 - `request` is `null` for Anthropic, which has no input file, and when the input file can no longer be read
 - `request` and `response` are both `null`, with every other field kept, when the key or team that created the batch has message logging turned off in its logging settings, when `litellm.turn_off_message_logging` is on, or when that key or team no longer exists
-- Each object is written once, right after the batch is billed. A write that fails is logged as an error and is not retried, and the batch stays billed
+- Each object is written once, in the background after the batch is billed, one batch at a time on each proxy worker, so a slow or unreachable bucket never holds up billing. A write that fails is logged as an error and is not retried, and the batch stays billed
+- Objects still waiting to be written when the proxy shuts down are not written. While 50 batches on one worker are still waiting, the next batch's object is skipped and an error is logged
+- Building an object reads the batch's error file, and its input file unless the bodies are dropped, from the provider once more. Those reads are file content calls, so your request logging callbacks log them like any other
 - `s3_use_team_prefix`, `s3_use_key_prefix`, `s3_log_prompts_only` and `s3_strip_base64_files` do not apply to these objects
 - The whole batch is held in memory while its object is built, so plan for that on very large batches
 
