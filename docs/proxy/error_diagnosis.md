@@ -54,15 +54,15 @@ This error is from **OpenAI** (notice `OpenAIException`). The OpenAI API key con
 ```
 {
   "error": {
-    "message": "litellm.ServiceUnavailableError: AnthropicError - {\"type\": \"error\", \"error\": {\"type\": \"overloaded_error\", \"message\": \"Overloaded\"}}",
+    "message": "litellm.InternalServerError: AnthropicException - Overloaded. Handle with `litellm.InternalServerError`.",
     "type": "internal_server_error",
     "param": null,
-    "code": "503"
+    "code": "500"
   }
 }
 ```
 
-This error is from **Anthropic** (notice `AnthropicError`). The Anthropic API answered 529 `overloaded_error`, which LiteLLM reports as a 503 `ServiceUnavailableError` on the OpenAI-shaped routes and as 529 `overloaded_error` on `/v1/messages` - this is not a LiteLLM issue.
+This error is from **Anthropic** (notice `AnthropicException`). The Anthropic API is overloaded - this is not a LiteLLM issue. On `/v1/messages` the same overload is answered as Anthropic answers it, HTTP 529 with `overloaded_error`.
 
 ### Gateway Error (from LiteLLM)
 
