@@ -346,6 +346,100 @@ curl -s "http://0.0.0.0:4000/v1/files/${ERROR_FILE_ID}/content" \
 
 Failed requests cost nothing, so `spend` covers the successful lines only and a batch that half failed costs about half of what you budgeted for. A request the provider accepted but LiteLLM could not price still counts as successful and is billed at `$0`, which keeps the counts reconcilable with the provider's own numbers. A batch whose requests all failed has no output file at all, and its cost row records `$0`, zero successful requests, and the failure count read from the error file. Anthropic and Bedrock extended thinking batches do not report reasoning tokens per line, so `reasoning_tokens` stays absent for them even though the model was thinking. The one case where the two counts do not add up to the provider's total is an output line that is not valid JSON, which gets skipped with a warning and lands in neither count
 
+### Storing every line's request and response
+
+The cost row sums the whole batch, and providers delete batch files after a while. To keep each request and its answer, list a bucket under `batch_line_item_callbacks`. Once the poller has billed a batch, it writes one JSONL object per batch to every bucket listed there, with one record per line
+
+```yaml showLineNumbers title="config.yaml"
+litellm_settings:
+  batch_line_item_callbacks: ["s3_v2", "gcs_bucket"]
+  s3_callback_params:          # read by s3_v2, same keys as the s3 logging callback
+    s3_bucket_name: my-batch-logs
+    s3_region_name: us-east-2
+    s3_path: litellm           # optional prefix
+```
+
+`gcs_bucket` reads `GCS_BUCKET_NAME` and `GCS_PATH_SERVICE_ACCOUNT` from the environment, the same as the [GCS logging callback](./logging#google-cloud-storage-buckets), and like that callback it needs an enterprise license. Listing a bucket here does not turn on request logging to it, and `success_callback` does not turn on batch line items. The two settings are independent
+
+The object is named after the day the batch finished, in UTC, and the batch id you got back from `POST /v1/batches`, with any `/` in the id replaced by `_`:
+
+| Bucket | Object |
+| --- | --- |
+| S3 | `<s3_path>/batch_line_items/<YYYY-MM-DD>/<batch id>.jsonl` |
+| GCS | `batch_line_items/<YYYY-MM-DD>/<batch id>.jsonl` |
+
+Each line of the object is one record:
+
+```json showLineNumbers title="one record (pretty-printed, trimmed)"
+{
+  "batch_id": "bGl0ZWxsbV9wcm94eTttb2RlbF9pZDpjZDky...",
+  "custom_id": "request-1",
+  "status": "success",
+  "request": {
+    "custom_id": "request-1",
+    "method": "POST",
+    "url": "/v1/chat/completions",
+    "body": {
+      "model": "gpt-5.4-nano",
+      "messages": [
+        {"role": "system", "content": "Answer in one word"},
+        {"role": "user", "content": "Is the sky blue?"}
+      ]
+    }
+  },
+  "response": {
+    "id": "batch_req_6acdfc86d8548190b47c54904f2f5727",
+    "custom_id": "request-1",
+    "response": {
+      "status_code": 200,
+      "body": {
+        "id": "chatcmpl-EYTHQP5vBYthXQpZJLgGTmNbLjwdq",
+        "object": "chat.completion",
+        "choices": [
+          {"index": 0, "message": {"role": "assistant", "content": "Yes"}, "finish_reason": "stop"}
+        ],
+        "usage": {"prompt_tokens": 19, "completion_tokens": 5, "total_tokens": 24}
+      }
+    },
+    "error": null
+  },
+  "usage": {"prompt_tokens": 19, "completion_tokens": 5, "total_tokens": 24},
+  "response_cost": 5.025e-06,
+  "model": "gpt-5.4-nano",
+  "custom_llm_provider": "openai",
+  "metadata": {
+    "user_api_key_hash": "d6f6bc353e745199f3f1aa285952f2dc...",
+    "user_api_key_alias": "batch-jobs",
+    "user_api_key_team_id": null,
+    "user_api_key_team_alias": null,
+    "user_api_key_user_id": "key:d6f6bc353e745199f3f1aa285952f2dc...",
+    "user_api_key_org_id": null
+  }
+}
+```
+
+| Field | What it holds |
+| --- | --- |
+| `batch_id` | The batch id you got back from `POST /v1/batches` |
+| `custom_id` | The `custom_id` from your input file, or the `recordId` for Bedrock |
+| `status` | `success` when the provider answered the request, `failure` when it rejected it |
+| `request` | Your input line as the provider holds it: the line you uploaded for OpenAI, Azure and Mistral, the converted line with `recordId` and `modelInput` for Bedrock |
+| `response` | The provider's output or error line, exactly as the provider wrote it |
+| `usage` | That line's tokens, `null` for a failed line |
+| `response_cost` | That line's cost at the deployment's batch rates, `0` for a failed line. The records of a batch add up to the cost row's `spend` |
+| `model`, `custom_llm_provider` | The deployment the batch ran on |
+| `metadata` | The key, team, user and organization that created the batch |
+
+A few things to know:
+
+- Only managed batches get records, meaning batches created from a file uploaded with `target_model_names`, because the poller only bills those
+- A batch where every line failed still gets an object, holding its error lines
+- `request` is `null` for Anthropic, which has no input file, and when the input file can no longer be read
+- `request` and `response` are both `null`, with every other field kept, when the key or team that created the batch has message logging turned off in its logging settings, when `litellm.turn_off_message_logging` is on, or when that key or team no longer exists
+- Each object is written once, right after the batch is billed. A write that fails is logged as an error and is not retried, and the batch stays billed
+- `s3_use_team_prefix`, `s3_use_key_prefix`, `s3_log_prompts_only` and `s3_strip_base64_files` do not apply to these objects
+- The whole batch is held in memory while its object is built, so plan for that on very large batches
+
 ## FAQ
 
 ### Where are my files written?
