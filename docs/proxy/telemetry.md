@@ -1,23 +1,31 @@
 # Usage telemetry
 
-The LiteLLM proxy can count how requests to it go, which providers it calls, and which Admin UI pages people open, then hand those counts to an HTTPS endpoint or keep them in its own database. Every group is **off unless you turn it on**, and nothing leaves your deployment unless you also set an endpoint
+The LiteLLM proxy can count how requests to it go, which providers it calls, and which Admin UI pages people open, then hand those counts to an HTTPS endpoint or keep them in its own database. Every group is **off unless you turn it on**, nothing is recorded until you also pick a destination, and nothing leaves your deployment unless that destination is `http`
 
 Telemetry never contains prompts, completions, API keys, user ids, team ids, model names, IP addresses, header values or request bodies. Every field it can produce is listed on this page; a field that is not declared in the record schema cannot be exported. Token counts are only ever summed per row, never kept per request
 
 ## Turn it on
 
-A proxy admin turns groups on from **Settings > Telemetry** in the Admin UI (`/ui/telemetry`). The page has a Proxy requests tab and an Admin UI tab, describes what each group sends, says where and how often reports go, and shows the last report this worker sent or, before the first one, a sample report built from made-up traffic. The choice is stored in the `LiteLLM_Config` table, so it survives restarts and reaches every worker at its next report window
+A proxy admin turns groups on and picks a destination from **Settings > Telemetry** in the Admin UI (`/ui/telemetry`). The page has a Proxy requests tab and an Admin UI tab, describes what each group sends, says where and how often reports go, and shows the last report this worker sent or, before the first one, a sample report built from made-up traffic. The choice is stored in the `LiteLLM_Config` table, so it survives restarts and reaches every worker at its next report window
 
-You can also pin the groups with an environment variable, which makes the page read-only:
+You can also pin the groups and the destination with environment variables, which makes those controls read-only on the page:
 
 ```bash
 export LITELLM_TELEMETRY_GROUPS=heartbeat,request_success,token_info
-export LITELLM_TELEMETRY_ENDPOINT=https://telemetry.example.com/v1/reports   # optional
+export LITELLM_TELEMETRY_DESTINATION=http   # or local_table
+export LITELLM_TELEMETRY_ENDPOINT=https://telemetry.example.com/v1/reports   # needed for http
 ```
 
 To guarantee telemetry stays off whatever is saved in the UI, set `LITELLM_TELEMETRY_DISABLED=true`. It wins over `LITELLM_TELEMETRY_GROUPS` and over the stored settings. Whenever any `LITELLM_TELEMETRY_*` variable is set, the Admin UI shows a banner naming the variables (never their values)
 
-With an endpoint set, each worker POSTs one JSON report per window to it, and once more on shutdown. Without one, reports are kept in the `LiteLLM_TelemetryReport` table so an air-gapped install can export them by hand (see [Export reports](#export-reports)). With neither an endpoint nor a database nothing is collected
+There are two destinations, and the proxy never picks one for you:
+
+| Destination | Where reports go | Needs |
+|---|---|---|
+| `http` | Each worker POSTs one JSON report per window to `LITELLM_TELEMETRY_ENDPOINT`, and once more on shutdown. A failed send is retried next window | `LITELLM_TELEMETRY_ENDPOINT`. Setting `LITELLM_TELEMETRY_DESTINATION=http` without it fails at startup, and the UI cannot save it |
+| `local_table` | Each worker stores one report per window in the `LiteLLM_TelemetryReport` table, kept for `LITELLM_TELEMETRY_RETENTION_DAYS`. Nothing leaves the proxy, and an air-gapped install can export reports by hand (see [Export reports](#export-reports)) | A database |
+
+If groups are on but no destination is chosen, or the chosen one is not available, nothing is recorded, the proxy logs a warning, and the Telemetry page asks you to pick one. A destination saved from the UI takes effect at each worker's next report window, like the groups. `LITELLM_TELEMETRY_DESTINATION` wins over the saved destination
 
 ## Groups
 
@@ -90,7 +98,8 @@ The response holds `reports` plus `next_after` and `next_after_id`. Pass those b
 |---|---|
 | `LITELLM_TELEMETRY_DISABLED` | `true` forces every group off, whatever is set elsewhere |
 | `LITELLM_TELEMETRY_GROUPS` | Comma-separated groups to turn on. When set, it overrides the Admin UI settings, and an empty value means off |
-| `LITELLM_TELEMETRY_ENDPOINT` | HTTPS URL that receives one JSON report per window. When unset, reports go to the local table |
+| `LITELLM_TELEMETRY_DESTINATION` | `local_table` or `http`. When set, it overrides the destination saved in the Admin UI. With neither set, nothing is recorded |
+| `LITELLM_TELEMETRY_ENDPOINT` | HTTPS URL that receives one JSON report per window when the destination is `http` |
 | `LITELLM_TELEMETRY_SETTLE_TIMEOUT_SECONDS` | How long a finished request waits for its provider attempts to be logged before its row is written. Default is `2` |
 | `LITELLM_TELEMETRY_RETENTION_DAYS` | How long locally kept reports are retained. Default is `30` |
 

@@ -1308,8 +1308,9 @@ router_settings:
 | LITELLM_SENSITIVE_ROUTING_TTL | TTL in seconds for sticky sensitive-data routing decisions; controls how long a session stays pinned to the on-premise model selected by a routing guardrail. Default is 3600
 | LITELLM_SSL_CIPHERS | SSL/TLS cipher configuration for faster handshakes. Controls cipher suite preferences for OpenSSL connections.
 | LITELLM_SECRET_AWS_KMS_LITELLM_LICENSE | AWS KMS encrypted license for LiteLLM
+| LITELLM_TELEMETRY_DESTINATION | Where usage telemetry reports go: `local_table` or `http`. Overrides the destination saved in the Admin UI. Nothing is recorded until a destination is chosen. See [Usage telemetry](./telemetry)
 | LITELLM_TELEMETRY_DISABLED | Set to `true` to force usage telemetry off, overriding `LITELLM_TELEMETRY_GROUPS` and the Admin UI settings. See [Usage telemetry](./telemetry)
-| LITELLM_TELEMETRY_ENDPOINT | HTTPS URL that receives one JSON usage telemetry report per window. When unset, reports are kept in the proxy database. See [Usage telemetry](./telemetry)
+| LITELLM_TELEMETRY_ENDPOINT | HTTPS URL that receives one JSON usage telemetry report per window when `LITELLM_TELEMETRY_DESTINATION` is `http`. See [Usage telemetry](./telemetry)
 | LITELLM_TELEMETRY_GROUPS | Comma-separated usage telemetry groups to turn on, such as `heartbeat,request_success`. Overrides the Admin UI settings when set. See [Usage telemetry](./telemetry)
 | LITELLM_TELEMETRY_RETENTION_DAYS | Days to keep usage telemetry reports stored in the proxy database. Default is `30`
 | LITELLM_TELEMETRY_SETTLE_TIMEOUT_SECONDS | Seconds a finished request waits for its provider attempts to be logged before its telemetry row is written. Default is `2`
