@@ -361,7 +361,7 @@ litellm_settings:
 
 `gcs_bucket` reads `GCS_BUCKET_NAME` and `GCS_PATH_SERVICE_ACCOUNT` from the environment, the same as the [GCS logging callback](./logging#google-cloud-storage-buckets), and like that callback it needs an enterprise license. Listing a bucket here does not turn on request logging to it, and `success_callback` does not turn on batch line items. The two settings are independent
 
-The object is named after the day the batch finished, in UTC, and the batch id you got back from `POST /v1/batches`, with any `/` in the id replaced by `_`:
+The object is named after the day the batch finished, in UTC, and the batch id you got back from `POST /v1/batches`, with any `/` in the id replaced by `_`. Vertex AI reports no finish time, so a Vertex AI batch's object and its records' `finished_at` use the time the batch was created:
 
 | Bucket | Object |
 | --- | --- |
@@ -435,6 +435,8 @@ A few things to know:
 - Only managed batches get records, meaning batches created from a file uploaded with `target_model_names`, because the poller only bills those
 - A batch where every line failed still gets an object, holding its error lines
 - `request` is `null` for Anthropic, which has no input file, for a Vertex AI embeddings line whose `input` list was split into one row per item, and when the input file can no longer be read
+- A Vertex AI line whose row carries no `custom_id` shows `unknown`, as in the batch's output file, and gets `request` `null`, so a Vertex AI line you gave the `custom_id` `unknown` also gets `request` `null`
+- When the error file can no longer be read, the object leaves the failed lines out and a warning is logged, so a batch where every line failed then gets no object
 - `request` and `response` are both `null`, with every other field kept, when the key or team that created the batch has message logging turned off in its logging settings, when `litellm.turn_off_message_logging` is on, or when that key or team no longer exists
 - A batch created without a virtual key, such as with a JWT or the master key, follows its team's logging settings and `litellm.turn_off_message_logging`
 - Each object is written in the background once the poller run that billed the batch and marked it done has finished with every other batch it found, one batch at a time on each proxy worker, so neither pricing the lines nor a slow or unreachable bucket holds up billing. `s3_v2` tries a write up to 3 times when the bucket answers 403, 500 or 503, the same as for request logs, and `gcs_bucket` tries once. When the bucket closes the connection without answering, the shared HTTP client sends the object again at once, as it does for request logs. A write that still fails is logged as an error and never retried later, and the batch stays billed. A failed `s3_v2` write also counts in the `S3Logger` callback failure metric that failed request log uploads use
@@ -442,8 +444,9 @@ A few things to know:
 - With several proxy instances, the object of an expired, cancelled or all-failed batch can be written by more than one instance. The name is the same, so the bucket keeps one object
 - Objects still waiting to be written when the proxy shuts down are not written. While 50 batches on one worker are waiting or being written, the next batch's object is skipped and an error is logged
 - Building an object reads the batch's error file, and its input file unless the bodies are dropped, from the provider once more. Those reads are file content calls, so your request logging callbacks log them like any other
+- Building an object prices every line again, the way the cost row already priced them, so anything that pricing does per line happens once more per line, such as a secret manager lookup when `key_management_system` reads secrets, or an INFO log line per line for a Vertex AI batch. Checking the creating key's or team's logging settings also looks up their secret references once per batch
 - `s3_use_team_prefix`, `s3_use_key_prefix`, `s3_log_prompts_only` and `s3_strip_base64_files` do not apply to these objects
-- The whole batch is held in memory while its object is built and sent, a few copies at a time, so plan for that on very large batches. Encrypting the object for an HTTPS bucket runs on the worker's event loop, so a very large object briefly slows the requests that worker is serving
+- The whole batch is held in memory while its object is built and sent, a few copies at a time, so plan for that on very large batches. Encrypting the object for an HTTPS bucket runs on the worker's event loop, so a very large object briefly slows the requests that worker is serving. A very large batch still being priced when the proxy shuts down makes the shutdown take a few seconds longer
 
 ## FAQ
 
