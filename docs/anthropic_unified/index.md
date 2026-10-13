@@ -621,7 +621,7 @@ Responses will be in the Anthropic messages API format.
 
 ## Error Format
 
-Errors use Anthropic's error shape with the status code Anthropic's own API answers with. That contract has no 503, so a deployment that cannot take the request right now (an overloaded Bedrock answering 503, a paused model, an exhausted fallback chain) is answered as 529 `overloaded_error`, and so is an upstream Anthropic 529 and a 503 the gateway raises itself, such as a fail-closed guardrail or rate limiter that cannot reach its backend. A client built for Anthropic's API, such as Claude Code, then takes its overload path instead of retrying a generic server error. The message still says what happened upstream.
+Errors use Anthropic's error shape with the status code Anthropic's own API answers with. That contract has no 503, so a deployment that cannot take the request right now (an overloaded Bedrock answering 503, a paused deployment, an exhausted fallback chain) is answered as 529 `overloaded_error`, and so is an upstream Anthropic 529 and a 503 the gateway raises itself, such as a fail-closed guardrail or rate limiter that cannot reach its backend. A client built for Anthropic's API, such as Claude Code, then takes its overload path instead of retrying a generic server error. The message still says what happened upstream.
 
 ```json
 {
