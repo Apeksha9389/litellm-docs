@@ -171,7 +171,7 @@ flat cost = ptu_count x cost_per_ptu_per_hour x hours active that day
 
 A deployment split with `ptu_shares` writes one row per team instead, each carrying that team's share in place of `ptu_count`: 30 and 20 of the 50 PTUs at $1 per PTU-hour are $720 and $480 for a full day, and the deployment's $1,200 lands on nobody else. Active hours are the overlap between the day and the reservation window, so a reservation starting at noon accrues 12 hours on its first day and 24 thereafter. The rows are written into `LiteLLM_DailyTeamSpend` under the reserved key `__ptu_flat_cost__`, which keeps flat cost separate from the per-request spend recorded against real API keys.
 
-A reservation that starts before the job first sees it is filled in as well: the catch-up pass prices each elapsed day back to `ptu_effective_from`, up to 91 days. A deployment configured today with a backdated start therefore accrues its whole window on the first run
+A reservation that starts before the job first sees it is filled in as well: the catch-up pass prices each elapsed day back to `ptu_effective_from`, up to 91 days. A deployment configured today with a backdated start therefore accrues its whole window on the first run. A day the job has already priced keeps its rows when shares later move between teams, so the team taking over a share is billed only for days priced after the move, never for days the previous holder already paid for.
 
 Flat cost does not count against team or key budgets. Reserved capacity is already paid for, so a team cannot exhaust a budget by using the capacity it reserved.
 
