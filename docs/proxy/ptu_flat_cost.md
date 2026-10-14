@@ -16,7 +16,7 @@ The feature is off by default and inert until you opt in:
 export LITELLM_ENABLE_PTU_COST_ATTRIBUTION=True
 ```
 
-A configured secret manager can hold the variable instead. When it is not set in the environment, the proxy reads it from the secret manager at most once a minute, and a value set in the environment always wins.
+A configured secret manager can hold the variable instead. When the proxy would ask a secret manager for it, as it does for other settings, the secret manager's value wins over the environment and is read at most once a minute. The environment decides only when no secret manager is consulted.
 
 With the variable unset the daily job is not scheduled, the model endpoints reject PTU configuration, the usage read path reports zero flat cost, and the PTU inputs stay hidden in the model form.
 
@@ -201,7 +201,7 @@ This needs `LITELLM_ENABLE_PTU_COST_ATTRIBUTION` set and a pricing map entry for
 
 ## Read the cost back
 
-`/team/daily/activity` reports `flat_cost` per day and `total_flat_cost` for the range, alongside the usual per-token `spend`, and `ptu_hours` next to the tokens: on each day, on each PTU model group and the API keys under it, and as `total_ptu_hours` for the range. PTU-hours are the team's prompt, cached, and completion tokens converted through the model's sizing row, so a team can compare what it consumed with what it reserved. A day's tokens are sized only by a reservation whose `ptu_effective_from` to `ptu_effective_to` window covers that day, so usage before a reservation starts or after it ends reads no PTU-hours:
+`/team/daily/activity` reports `flat_cost` per day and `total_flat_cost` for the range, alongside the usual per-token `spend`, and `ptu_hours` next to the tokens: on each day, on each PTU model group and the API keys under it, and as `total_ptu_hours` for the range. PTU-hours are the team's prompt, cached, and completion tokens converted through the model's sizing row, so a team can compare what it consumed with what it reserved. A day's tokens are sized only by a reservation whose `ptu_effective_from` to `ptu_effective_to` window covers that day, so usage before a reservation starts or after it ends reads no PTU-hours. Each team's row under `breakdown.entities` keeps `ptu_hours` at 0, since that row carries no model group to size by, so read one team's PTU-hours from a request naming only that team:
 
 ```bash
 curl -s "http://localhost:4000/team/daily/activity?team_ids=<team-id>&start_date=2026-01-01&end_date=2026-01-31" \
