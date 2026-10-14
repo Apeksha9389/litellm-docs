@@ -119,13 +119,13 @@ A chat call to `my-embeddings` then returns:
 }
 ```
 
-The check covers `/v1/chat/completions`, `/v1/completions`, `/v1/responses` (including its WebSocket mode), their unprefixed aliases, `/v1/messages` (answered in the Anthropic error shape), the Gemini `generateContent` and `streamGenerateContent` routes, and `/v1beta/interactions`. A `supported_endpoints` list that contains any of those endpoints counts as chat-capable and is never rejected.
+The check covers `/v1/chat/completions`, `/v1/completions`, `/v1/responses` (including its WebSocket mode and `/v1/responses/compact`), their unprefixed aliases, `/v1/messages` (answered in the Anthropic error shape), the Gemini `generateContent` and `streamGenerateContent` routes, and `/v1beta/interactions`. A `supported_endpoints` list that contains any of those endpoints counts as chat-capable and is never rejected. It applies the same way when the request's `model` is a deployment's `model_info.id` or its `litellm_params.model`, since the proxy routes those names to that deployment.
 
 Both fields are needed. A `supported_endpoints` list with no `mode`, or with a chat `mode`, keeps today's behavior, and so does a model name where any deployment declares nothing.
 
 When a fallback could answer the request, the request takes the normal path so the fallback answers it. This covers router `fallbacks`, `default_fallbacks`, key or team fallbacks, and `fallbacks` in the request body. A fallback counts only when it names a model on the proxy that has at least one deployment not declared non-chat this way, or a non-chat model whose own fallbacks lead to one. A fallback to another embedding-only model with no further chat fallback, to the same model, or to a model name the proxy does not have keeps the 400, and so does `disable_fallbacks: true` or `fallbacks: []` in the request.
 
-`GET /model/info` returns each model's cost map entry under `key`, and rows saved from it through the Admin UI can carry a copy of the cost map's `supported_endpoints`. A row with `key` whose `supported_endpoints` still equals the cost map's list does not count as a declaration. Set the list yourself to opt in.
+`GET /model/info` returns each model's cost map entry under `key`, and rows saved from it through the Admin UI can carry a copy of the cost map's `supported_endpoints`. A row with `key` does not count as a declaration when its `supported_endpoints` still equals the cost map's list, or when the cost map entry it names serves chat. Set the list yourself, on a row without a chat model's `key`, to opt in.
 
 :::warning Check existing declarations before upgrading
 
