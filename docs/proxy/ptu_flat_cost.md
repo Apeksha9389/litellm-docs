@@ -143,7 +143,7 @@ Deployment gpt-4.1-ptu is reserved for the teams holding a PTU share of it
 
 A team holding a share is served only from the deployments it holds a share on. An open deployment under the same model name serves the teams holding none, so a team's ceiling and its PTU-hours count only the traffic its reservation serves. To send a team's overflow past its share to pay-as-you-go capacity, use Azure's spillover target, described under [Spillover requests](#spillover-requests), rather than an open deployment beside the shared one.
 
-A team named in `ptu_shares` cannot be deleted while it holds the share. `POST /team/delete` returns a 400 naming the deployment until the share is moved to another team, since a deleted team would keep being billed for PTUs nobody can use.
+A team named in `ptu_shares` cannot be deleted while it holds the share. `POST /team/delete`, `DELETE /organization/delete` for an organization that owns such a team, and the SCIM `DELETE /scim/v2/Groups/{id}` each return a 400 naming the deployment until the share is moved to another team, since a deleted team would keep being billed for PTUs nobody can use. The organization delete is checked before anything is removed, so a refused call leaves every team in place.
 
 ### Each share is a per-minute ceiling
 
@@ -160,7 +160,9 @@ Team A's 30 PTUs of gpt-4.1 (3,000 input TPM per PTU, output counted at 4x) are 
 Rate limit exceeded for model_per_team_ptu: <team a id>:gpt-4.1-ptu. Limit type: tokens. Current limit: 90000, Remaining: 0. Limit resets at: ...
 ```
 
-A request that could never fit, such as one whose `max_tokens` alone is more than the share allows in a minute, gets a 400 instead, since no empty minute would admit it and a `retry-after` would only make the client retry it.
+A request that could never fit, such as one whose `max_tokens` alone is more than the share allows in a minute, gets a 400 instead, since no empty minute would admit it and a `retry-after` would only make the client retry it. Large output budgets need large shares: gpt-5.4 and gpt-5.4-mini count output at 6x, so `max_tokens: 32000` alone is 192,000 normalized tokens and needs a share of more than 80 PTUs of gpt-5.4 or 24 of gpt-5.4-mini.
+
+A request without `max_tokens` gets one written for it when the share is small. When the share counted in output tokens (the ceiling divided by the output ratio) is under 4,096, the proxy sends `max_tokens` as 1,024 or a quarter of that, whichever is smaller, the same cap it writes under any `tpm_limit` that small, and a longer reply stops with `finish_reason: length`. Three PTUs of gpt-5.4-mini cap an uncapped reply at 987 output tokens and one PTU of gpt-5.4 at 100. A client that sends its own `max_tokens` is never rewritten, so a team on a small share that needs long replies sets it.
 
 The ceiling lives on the same per-minute window as a team's `model_tpm_limit`, so it reads and resets the way the limits you already set do, and it needs nothing beyond `LITELLM_ENABLE_PTU_COST_ATTRIBUTION`. The sizing row is looked up by `model_info.base_model` first, then by the model in `litellm_params`, because an Azure deployment name is arbitrary. A shared deployment, or an Azure deployment reserved for one team, whose model has no row logs a warning at startup, sets no ceiling, and reports no PTU-hours; set `base_model` to the Azure model name to fix it. A single-team reservation on another provider only feeds the flat-cost rollup, which needs no sizing, so it is not warned about
 
@@ -199,7 +201,7 @@ This needs `LITELLM_ENABLE_PTU_COST_ATTRIBUTION` set and a pricing map entry for
 
 ## Read the cost back
 
-`/team/daily/activity` reports `flat_cost` per day and `total_flat_cost` for the range, alongside the usual per-token `spend`, and `ptu_hours` next to the tokens: on each day, on each PTU model group and the API keys under it, and as `total_ptu_hours` for the range. PTU-hours are the team's prompt, cached, and completion tokens converted through the model's sizing row, so a team can compare what it consumed with what it reserved:
+`/team/daily/activity` reports `flat_cost` per day and `total_flat_cost` for the range, alongside the usual per-token `spend`, and `ptu_hours` next to the tokens: on each day, on each PTU model group and the API keys under it, and as `total_ptu_hours` for the range. PTU-hours are the team's prompt, cached, and completion tokens converted through the model's sizing row, so a team can compare what it consumed with what it reserved. A day's tokens are sized only by a reservation whose `ptu_effective_from` to `ptu_effective_to` window covers that day, so usage before a reservation starts or after it ends reads no PTU-hours:
 
 ```bash
 curl -s "http://localhost:4000/team/daily/activity?team_ids=<team-id>&start_date=2026-01-01&end_date=2026-01-31" \
