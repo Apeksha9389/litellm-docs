@@ -166,7 +166,7 @@ The ceiling lives on the same per-minute window as a team's `model_tpm_limit`, s
 
 A request counts against its team's ceiling however it names the shared deployment: the model group, a `model_group_alias`, a routing group, the deployment's `model_info.id`, its provider model, or a wildcard pattern such as `ptu-*` that the router serves it through. A wildcard name counts only against the pattern the router serves it from, the most specific one that matches, so a request an open `*` route serves never charges a share, and a team holding no share gets the 400 on a name the shared pattern matches even when `*` matches it too.
 
-The ceiling is checked for the model a request names, before the proxy routes it. A fallback hop into the shared group is not checked against it, and neither is a call through the `/azure` pass-through route, which runs no rate limit checks. A routing group that spans shared deployments in more than one model group counts all of its traffic against one of those groups, the first in the model list, so keep each routing group to one shared model group.
+The ceiling is checked for the model a request names, before the proxy routes it. A fallback hop into the shared group is not checked against it, and neither is a call through the `/azure` pass-through route, which runs no rate limit checks and whose tokens do not count against the ceiling. A routing group that spans shared deployments in more than one model group counts all of its traffic against one of those groups, the first in the model list, so keep each routing group to one shared model group.
 
 A deployment owned by one team through `team_id` gets no ceiling, since that team already owns all of it, but its usage does report PTU-hours
 
