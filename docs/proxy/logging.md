@@ -1113,7 +1113,7 @@ curl --location 'http://0.0.0.0:4000/chat/completions' \
 
 #### Batch line items
 
-To also keep every request and response of your managed batches, one object per batch under `batch_line_items/`, add `gcs_bucket` to `litellm_settings.batch_line_item_callbacks`. See [Storing every line's request and response](./managed_batches#storing-every-lines-request-and-response)
+To also keep every request and response of your managed batches, as part objects per batch under `batch_line_items/`, add `gcs_bucket` to `litellm_settings.batch_line_item_callbacks`. See [Storing every line's request and response](./managed_batches#storing-every-lines-request-and-response)
 
 
 
@@ -1374,7 +1374,7 @@ if both team alias and key alias are enabled then the path becomes
 
 #### Batch line items
 
-To also keep every request and response of your managed batches, one object per batch under `<s3_path>/batch_line_items/`, add `s3_v2` to `litellm_settings.batch_line_item_callbacks`. It writes with the same `s3_callback_params`. See [Storing every line's request and response](./managed_batches#storing-every-lines-request-and-response)
+To also keep every request and response of your managed batches, as part objects per batch under `<s3_path>/batch_line_items/`, add `s3_v2` to `litellm_settings.batch_line_item_callbacks`. It writes with the same `s3_callback_params`. See [Storing every line's request and response](./managed_batches#storing-every-lines-request-and-response)
 
 ## AWS SQS
 
