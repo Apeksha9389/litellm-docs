@@ -31,7 +31,7 @@ In June we published a benchmark showing a Rust gateway adding about **0.05 ms**
 
 ![The test track](./img/panel-2.svg)
 
-But that benchmark ran on a test track: a straight line from your app to a mock provider, with every station closed. Our July benchmark said so plainly: no logging callbacks, no spend tracking, no persistence. That is the right way to measure the cost of the train itself. It is not the trip your production requests take.
+But that benchmark ran on a test track: a basic gate and router, then a clear run to a mock provider, with every station closed. Our July benchmark said so plainly: no logging callbacks, no spend tracking, no persistence. That is the right way to measure the cost of the train itself. It is not the trip your production requests take.
 
 ## Two kinds of station
 
@@ -53,8 +53,7 @@ Here is the map as of October 2026.
 - **Messages** has Rust track for Anthropic that you can switch on with `LITELLM_RUST=1`.
 - **Responses** and **Chat completions** are still Python roads.
 - **Customs** (cloud credentials for AWS, Azure and Google Cloud) and the **HTTP tunnel** are finished Rust.
-- **Logging** at the post office is Rust if you opt in.
-- **Cache** and **vault** have Rust versions being built. Until they open, a Rust train that needs them stops and unloads onto a wagon.
+- **Cache**, **vault** and the **post office** (logging and callbacks) have Rust versions being built. There is an opt-in Rust logger, but it only covers part of what logging does today, so we count the post office as Python. Until they open, a Rust train that needs them stops and unloads onto a wagon.
 - The **gate**, **router** and **ledger** are Python.
 
 OCR shows what this means in practice. On one CPU, the Rust path handled **1.5x to 1.7x** more OCR requests per second than Python. That is a solid gain, but it is not the 150x from the test track, because the express still stops at Python stations along the way. Fast on the track, slow at the stops.
@@ -65,21 +64,23 @@ In June we said Messages and Chat completions would be on Rust by September 1, a
 
 The plan then was to lay Rust track only on the API lines after the split: Rust would translate requests and responses, and Python would keep running every station. Once we started, we found that even the smallest stretch of track needs the stations. One provider's translation for one route still needs the cache, the secret manager, logging and callbacks. So we went back and started rebuilding the stations first: cloud credentials and the HTTP client are done, and cache, secrets and logging are underway. That is slower to show up in a benchmark, but it is the work that makes real requests fast.
 
-## Next: finish the lines and open the stations
+## Next: finish the lines, then the gate and router
 
-![Next: finish the lines and open the stations](./img/panel-5.svg)
+![Next: finish the lines, then the gate and router](./img/panel-5.svg)
 
-Our target for the **end of 2026** is Rust track on the three big lines, **Messages, Responses and Chat completions**, with the stations they stop at (cache, secrets, logging, callbacks and spend tracking) open as Rust. That is when a typical request spends most of its trip on Rust. Our target for **every other API** (embeddings, audio transcription, MCP and the rest) is **April 30, 2027**.
+Our target for the **end of 2026** is Rust track on the three big lines: **Messages, Responses and Chat completions**. Our target for **every other API** (embeddings, audio transcription, MCP and the rest) is **April 30, 2027**.
 
-The gate and the router come after the lines. We haven't set a new date for them yet, and we would rather say that than give you another date we can't stand behind. You can follow every line and station on the [migration tracker](/rust-migration), which updates with each release.
+The gate and the router come next, so a request can stay on Rust from the moment it reaches LiteLLM. We haven't set a new date for them yet, and we would rather say that than give you another date we can't stand behind.
+
+The stations move over gradually, and not all at once. Each callback or service gets a Rust version depending on how performance critical it is, so the busiest stops go first. Until a station has its Rust version, the train still stops and unloads there.
+
+You can follow every line and station on the [migration tracker](/rust-migration), which updates with each release.
 
 ## The Rust Express
 
 ![The Rust Express](./img/panel-6.svg)
 
 When every station is Rust, the whole trip runs at test-track speed, and that is the gateway the June benchmark was measuring. One thing stays Python on purpose: if you wrote your own callback in Python, the express still stops and unloads at your station, because it is your code.
-
-How much you will notice depends on how you use LiteLLM. For a single chat turn, the model's response time dwarfs anything the gateway adds. The difference shows up when you send a lot of requests (embeddings, classification, guardrails), run agents that make dozens of calls per task, or pay for the CPU and memory your gateway pods use.
 
 ## What you can do today
 
