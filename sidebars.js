@@ -388,6 +388,7 @@ const sidebars = {
           items: [
             "proxy/deploy",
             "proxy/prod",
+            "proxy/upgrade_guide",
             "proxy/health",
             {
               type: "category",
