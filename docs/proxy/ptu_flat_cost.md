@@ -16,6 +16,8 @@ The feature is off by default and inert until you opt in:
 export LITELLM_ENABLE_PTU_COST_ATTRIBUTION=True
 ```
 
+A configured secret manager can hold the variable instead. When it is not set in the environment, the proxy reads it from the secret manager at most once a minute, and a value set in the environment always wins.
+
 With the variable unset the daily job is not scheduled, the model endpoints reject PTU configuration, the usage read path reports zero flat cost, and the PTU inputs stay hidden in the model form.
 
 ## Configure a deployment
@@ -139,6 +141,10 @@ A shared deployment keeps its public model name and stays visible in model lists
 Deployment gpt-4.1-ptu is reserved for the teams holding a PTU share of it
 ```
 
+A team holding a share is served only from the deployments it holds a share on. An open deployment under the same model name serves the teams holding none, so a team's ceiling and its PTU-hours count only the traffic its reservation serves. To send a team's overflow past its share to pay-as-you-go capacity, use Azure's spillover target, described under [Spillover requests](#spillover-requests), rather than an open deployment beside the shared one.
+
+A team named in `ptu_shares` cannot be deleted while it holds the share. `POST /team/delete` returns a 400 naming the deployment until the share is moved to another team, since a deleted team would keep being billed for PTUs nobody can use.
+
 ### Each share is a per-minute ceiling
 
 Azure sizes a provisioned deployment in normalized tokens per minute: uncached input tokens in full, cached input at the model's cached ratio (a tenth for the GPT-6 family, nothing for the rest), and output tokens weighted by the model's output-to-input ratio, divided by the model's input TPM per PTU. LiteLLM ships that table, read from [Azure's provisioned throughput sizing page](https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/provisioned-throughput-sizing#deployment-parameters-and-throughput-values-by-model), and turns each share into a per-minute ceiling in the same units:
@@ -154,9 +160,13 @@ Team A's 30 PTUs of gpt-4.1 (3,000 input TPM per PTU, output counted at 4x) are 
 Rate limit exceeded for model_per_team_ptu: <team a id>:gpt-4.1-ptu. Limit type: tokens. Current limit: 90000, Remaining: 0. Limit resets at: ...
 ```
 
+A request that could never fit, such as one whose `max_tokens` alone is more than the share allows in a minute, gets a 400 instead, since no empty minute would admit it and a `retry-after` would only make the client retry it.
+
 The ceiling lives on the same per-minute window as a team's `model_tpm_limit`, so it reads and resets the way the limits you already set do, and it needs nothing beyond `LITELLM_ENABLE_PTU_COST_ATTRIBUTION`. The sizing row is looked up by `model_info.base_model` first, then by the model in `litellm_params`, because an Azure deployment name is arbitrary. A shared deployment, or an Azure deployment reserved for one team, whose model has no row logs a warning at startup, sets no ceiling, and reports no PTU-hours; set `base_model` to the Azure model name to fix it. A single-team reservation on another provider only feeds the flat-cost rollup, which needs no sizing, so it is not warned about
 
-A request counts against its team's ceiling however it names the shared deployment: the model group, a `model_group_alias`, a routing group, the deployment's `model_info.id`, its provider model, the `/azure` pass-through route, or a wildcard pattern such as `ptu-*` that the router serves it through. A wildcard name counts only against the pattern the router serves it from, the most specific one that matches, so a request an open `*` route serves never charges a share, and a team holding no share gets the 400 on a name the shared pattern matches even when `*` matches it too
+A request counts against its team's ceiling however it names the shared deployment: the model group, a `model_group_alias`, a routing group, the deployment's `model_info.id`, its provider model, or a wildcard pattern such as `ptu-*` that the router serves it through. A wildcard name counts only against the pattern the router serves it from, the most specific one that matches, so a request an open `*` route serves never charges a share, and a team holding no share gets the 400 on a name the shared pattern matches even when `*` matches it too.
+
+The ceiling is checked for the model a request names, before the proxy routes it. A fallback hop into the shared group is not checked against it, and neither is a call through the `/azure` pass-through route, which runs no rate limit checks. A routing group that spans shared deployments in more than one model group counts all of its traffic against one of those groups, the first in the model list, so keep each routing group to one shared model group.
 
 A deployment owned by one team through `team_id` gets no ceiling, since that team already owns all of it, but its usage does report PTU-hours
 
@@ -171,7 +181,7 @@ flat cost = ptu_count x cost_per_ptu_per_hour x hours active that day
 
 A deployment split with `ptu_shares` writes one row per team instead, each carrying that team's share in place of `ptu_count`: 30 and 20 of the 50 PTUs at $1 per PTU-hour are $720 and $480 for a full day, and the deployment's $1,200 lands on nobody else. Active hours are the overlap between the day and the reservation window, so a reservation starting at noon accrues 12 hours on its first day and 24 thereafter. The rows are written into `LiteLLM_DailyTeamSpend` under the reserved key `__ptu_flat_cost__`, which keeps flat cost separate from the per-request spend recorded against real API keys.
 
-A reservation that starts before the job first sees it is filled in as well: the catch-up pass prices each elapsed day back to `ptu_effective_from`, up to 91 days. A deployment configured today with a backdated start therefore accrues its whole window on the first run. A day the job has already priced keeps its rows when shares later move between teams, so the team taking over a share is billed only for days priced after the move, never for days the previous holder already paid for. A day whose write fails is written for none of its teams, and the next catch-up pass prices it for all of them.
+A reservation that starts before the job first sees it is filled in as well: the catch-up pass prices each elapsed day back to `ptu_effective_from`, up to 91 days. A deployment configured today with a backdated start therefore accrues its whole window on the first run. A day the job has already priced keeps its rows when shares later move between teams, so the team taking over a share is billed only for days priced after the move, never for days the previous holder already paid for. A day whose write fails is written for none of its teams, and the next catch-up pass prices it for all of them. The job splits a day by the shares as they stand when it runs, so shares moved during a day bill that whole day by the new split.
 
 Flat cost does not count against team or key budgets. Reserved capacity is already paid for, so a team cannot exhaust a budget by using the capacity it reserved.
 
