@@ -732,9 +732,9 @@ The strength order, from weakest to strongest, is `minimal`, `low`, `medium`, `h
 | `none` | `none` | `none` |
 | `default` | no reasoning effort | no reasoning effort |
 
-`none` and any level name outside the strength order are sent unchanged, so a caller who turned reasoning off is never rounded up. `default` sends no reasoning effort at all.
+`none` and any level name outside the strength order are sent unchanged, so a caller who turned reasoning off is never rounded up. With `drop_params: true`, a level the deployment does not declare is dropped instead, the same way LiteLLM drops other values a provider does not support. `default` sends no reasoning effort at all.
 
-To round down on every deployment, set `reasoning_effort_rounding: down` under `litellm_settings`. A deployment's own `model_info.reasoning_effort_rounding` wins over the global setting. A value other than `up` or `down` is ignored and the next setting applies, so the proxy checks the deployment first, then `litellm_settings`, then falls back to `up`.
+To round down on every deployment, set `reasoning_effort_rounding: down` under `litellm_settings`. A deployment's own `model_info.reasoning_effort_rounding` wins over the global setting. The value ignores case and surrounding spaces. A value other than `up` or `down` is ignored and the next setting applies, so the proxy checks the deployment first, then `litellm_settings`, then falls back to `up`.
 
 A non-empty `reasoning_effort_levels` also lets a provider that does not otherwise accept `reasoning_effort` take it, which today means `azure_ai`. An empty list does not.
 
