@@ -129,7 +129,7 @@ litellm --config config.yaml --port 4000
 # RUNNING on http://0.0.0.0:4000
 ```
 
-A deployment configured this way serves `/v1/chat/completions`, `/v1/responses`, and `/v1/messages` on the proxy.
+A deployment configured this way serves `/v1/chat/completions`, `/v1/responses`, and `/v1/messages` on the proxy. Each request goes to the matching Inference APIs endpoint as is, with no translation between API shapes.
 
 <Tabs>
 <TabItem value="chat" label="Chat Completions">
@@ -229,5 +229,3 @@ response = completion(
     api_key="your-api-key",
 )
 ```
-
-Passing `api_base="https://api.inferenceapis.com/v1"` without the `inferenceapis/` prefix also resolves to the Inference APIs provider, so `model="zai-org/GLM-5.3"` with that base URL is routed as `inferenceapis` and picks up `INFERENCEAPIS_API_KEY`.
