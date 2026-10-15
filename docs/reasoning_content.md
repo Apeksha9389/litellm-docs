@@ -734,11 +734,11 @@ The strength order, from weakest to strongest, is `minimal`, `low`, `medium`, `h
 
 `none` and any level name outside the strength order are sent unchanged, so a caller who turned reasoning off is never rounded up. With `drop_params: true`, a level the deployment does not declare is dropped instead, the same way LiteLLM drops other values a provider does not support. `default` sends no reasoning effort at all.
 
-To round down on every deployment, set `reasoning_effort_rounding: down` under `litellm_settings`. A deployment's own `model_info.reasoning_effort_rounding` wins over the global setting. The value ignores case and surrounding spaces. A value other than `up` or `down` is ignored and the next setting applies, so the proxy checks the deployment first, then `litellm_settings`, then falls back to `up`.
+To round down on every deployment, set `reasoning_effort_rounding: down` under `litellm_settings`. A deployment's own `model_info.reasoning_effort_rounding` wins over the global setting. The value ignores case and surrounding spaces. A value other than `up` or `down` is ignored with a warning in the proxy logs, and the next setting applies, so the proxy checks the deployment first, then `litellm_settings`, then falls back to `up`.
 
 A non-empty `reasoning_effort_levels` also lets a provider that does not otherwise accept `reasoning_effort` take it, which today means `azure_ai`. An empty list does not.
 
-On `/v1/messages`, which Claude Code and other Anthropic-format clients call, the effort derived from `thinking` or `output_config.effort` is rounded onto the declared levels the same way, so `xhigh` goes to `max` when `max` is declared. A `/v1/chat/completions` request that sends an Anthropic-style `thinking` budget to a `hosted_vllm` deployment is rounded too.
+On `/v1/messages`, which Claude Code and other Anthropic-format clients call, the effort derived from `thinking` or `output_config.effort` is rounded onto the declared levels the same way, so `xhigh` goes to `max` when `max` is declared. A `/v1/chat/completions` request that sends an Anthropic-style `thinking` budget is rounded too, on every provider. On adaptive Claude models the budget first becomes an effort through Claude's own mapping, and the caller's `thinking.display` is kept.
 
 Each change logs one INFO line in this shape.
 
