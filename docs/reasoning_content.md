@@ -695,6 +695,59 @@ model_list:
 
 :::
 
+## Round `reasoning_effort` to the levels a deployment accepts {#reasoning-effort-levels}
+
+Available from v1.107.0.
+
+Some deployments accept only a few reasoning effort levels and answer 400 for the rest. List the levels a deployment accepts in `reasoning_effort_levels` under its `model_info`, and the proxy sends a declared level in place of any level the deployment does not accept. This applies on `/v1/chat/completions` (streaming included), `/v1/responses`, and `/v1/messages`, for every provider. Only the deployment's own declaration counts. The `reasoning_effort_levels` in the model cost map never rounds a request.
+
+```yaml showLineNumbers title="config.yaml"
+model_list:
+  - model_name: my-model-azure-ai
+    litellm_params:
+      model: azure_ai/my-model
+      api_base: https://my-endpoint.services.ai.azure.com
+      api_key: os.environ/AZURE_AI_API_KEY
+    model_info:
+      reasoning_effort_levels: ["low", "high", "max", "none"]
+  - model_name: my-model-vllm
+    litellm_params:
+      model: hosted_vllm/my-model
+      api_base: https://my-vllm-server.example.com/v1
+    model_info:
+      reasoning_effort_levels: ["low", "high", "max", "none"]
+      reasoning_effort_rounding: down
+```
+
+The strength order, from weakest to strongest, is `minimal`, `low`, `medium`, `high`, `xhigh`, `max`. Rounding up is the default, and it sends the weakest declared level at least as strong as the request, or the strongest declared level when the request is above all of them. Rounding down sends the strongest declared level at most as strong as the request, or the weakest declared level when the request is below all of them. With the config above, `my-model-azure-ai` rounds up and `my-model-vllm` rounds down.
+
+| Requested | Sent when rounding up | Sent when rounding down |
+|---|---|---|
+| `minimal` | `low` | `low` |
+| `low` | `low` | `low` |
+| `medium` | `high` | `low` |
+| `high` | `high` | `high` |
+| `xhigh` | `max` | `high` |
+| `max` | `max` | `max` |
+| `none` | `none` | `none` |
+| `default` | no reasoning effort | no reasoning effort |
+
+`none` and any level name outside the strength order are sent unchanged, so a caller who turned reasoning off is never rounded up. `default` sends no reasoning effort at all.
+
+To round down on every deployment, set `reasoning_effort_rounding: down` under `litellm_settings`. A deployment's own `model_info.reasoning_effort_rounding` wins over the global setting. A value other than `up` or `down` is ignored and the next setting applies, so the proxy checks the deployment first, then `litellm_settings`, then falls back to `up`.
+
+A non-empty `reasoning_effort_levels` also lets a provider that does not otherwise accept `reasoning_effort` take it, which today means `azure_ai`. An empty list does not.
+
+On `/v1/messages`, which Claude Code and other Anthropic-format clients call, the effort derived from `thinking` or `output_config.effort` is rounded onto the declared levels the same way, so `xhigh` goes to `max` when `max` is declared. A `/v1/chat/completions` request that sends an Anthropic-style `thinking` budget to a `hosted_vllm` deployment is rounded too.
+
+Each change logs one INFO line in this shape.
+
+```text
+reasoning_effort medium sent as high (rounding up) to deployment <deployment id>, model group my-model-azure-ai, model azure_ai/my-model
+```
+
+The proxy shows INFO lines only when `LITELLM_LOG=INFO` is set. With `json_logs: true` under `litellm_settings`, the line also carries `reasoning_effort_deployment_id`, `reasoning_effort_model_group`, `reasoning_effort_deployment_model`, `reasoning_effort_requested`, `reasoning_effort_sent`, and `reasoning_effort_rounding` as JSON keys, so you can filter or chart them.
+
 ## OpenAI Responses API - Auto-Summary Control
 
 When using OpenAI Responses API models (like `{{openai_large}}`) via `/chat/completions` with `reasoning_effort`, you can control whether `summary="detailed"` is automatically added to the reasoning parameter.
