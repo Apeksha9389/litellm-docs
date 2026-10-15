@@ -351,6 +351,7 @@ Changing `"model"` to `"luna"` asks OpenAI instead and still returns System One 
 | `state` | string, object or array | The thing being judged, such as a support ticket, a document or a chat transcript |
 | `questions` | object | 1 to 128 named questions. Each key becomes a key in `answers` |
 | `images` | array, optional | Image URLs or data URLs. OpenAI and Cloudflare Clef only, with the rules in [Image input](#image-input) |
+| `assets` | object, optional | TypeSafe only. Images keyed by a reference string, see [TypeSafe images and box questions](#typesafe-images-and-box-questions) |
 
 Every question has a `type` and an optional `instructions` field. Extra fields on a question are forwarded to System One providers unchanged
 
@@ -359,8 +360,46 @@ Every question has a `type` and an optional `instructions` field. Extra fields o
 | `noul` | Optional object with `true` and `false` descriptions. A noul question needs `instructions` or `criteria` | `noul`: probability that the answer is true |
 | `choice` | Required object mapping 1 to 255 labels to descriptions | `choice`, `confidence`, `probabilities` per label |
 | `score` | Required array of 1 to 10 levels, lowest first | `score` (0 to levels - 1), `confidence`, `legend`, `probabilities` per level |
+| `box` | None. TypeSafe `jev-1.14.0` and `jev-preview` only | `box` with `top`, `bottom`, `left` and `right` edges as fractions of the image height and width, and `confidence`, which can be `null` |
 
 On both routes, requests that break these rules, such as no questions at all, duplicate choice values or a `score` question with 11 levels, are rejected by LiteLLM with a 400 before any provider is called
+
+### TypeSafe images and box questions
+
+Jev 1.14 reads images and answers `box` questions, which find where something is in an image. Both are TypeSafe "danger zone" features, so TypeSafe only accepts them when the request carries the `TypeSafe-Danger-Zone-Images: true` header. LiteLLM does not add that header for you. Send it in the request body as `extra_headers`, or set it once on the deployment under `litellm_params.extra_headers`. A plain HTTP header on your request to the proxy is not forwarded to TypeSafe.
+
+Each image goes in `assets` under a reference string of your choosing, and that same string has to appear somewhere in `state`, a question's `instructions` or its `criteria`, where TypeSafe swaps it for the image. An asset is `{"type": "image", "format": "png", "data_base64": "..."}`, where `format` is `png`, `jpg` or `jpeg`. A reference is 1 to 1024 bytes and cannot be blank. A random UUID per image is the safest choice, because references are matched as plain text.
+
+```bash showLineNumbers
+curl -X POST 'http://0.0.0.0:4000/v1/systemone' \
+-H "Authorization: Bearer $LITELLM_API_KEY" \
+-H 'Content-Type: application/json' \
+-d '{
+  "model": "jev-1.14",
+  "state": {"photo": "img-7f3a"},
+  "questions": {
+    "square": {"type": "box", "instructions": "the red square in `photo`"},
+    "has_square": {"type": "noul", "instructions": "Is there a red square in `photo`?"}
+  },
+  "assets": {"img-7f3a": {"type": "image", "format": "png", "data_base64": "<base64 PNG>"}},
+  "extra_headers": {"TypeSafe-Danger-Zone-Images": "true"}
+}'
+```
+
+Response
+
+```json
+{
+  "model": "jev-1.14.0",
+  "answers": {
+    "square": {"type": "box", "box": {"top": 0.52, "bottom": 0.75, "left": 0.25, "right": 0.48}, "confidence": 0.92},
+    "has_square": {"type": "noul", "noul": 0.99}
+  },
+  "usage": {"input_tokens": 754, "output_tokens": 37}
+}
+```
+
+Without the header TypeSafe answers 400 with `Images are experimental. Send the header TypeSafe-Danger-Zone-Images: true to use them.` Long context works the same way: send `TypeSafe-Danger-Zone-Long-Context: true` in `extra_headers` to raise both context limits to 262k tokens. Other providers do not take `assets` or `box` questions, so LiteLLM rejects those requests with a 400 before calling them. In the SDK, pass `assets={...}` and `extra_headers={...}` to `litellm.systemone`.
 
 ## SDK usage
 
@@ -421,7 +460,7 @@ async def main():
 asyncio.run(main())
 ```
 
-All four functions also accept `safety_identifier`, `api_key`, `api_base`, `timeout`, `custom_llm_provider` and `extra_headers`. `litellm.systemone` and `litellm.asystemone` also take `images`, a list of image URLs or data URLs. Passing `images` to `litellm.decisions` raises a `BadRequestError` unless `drop_params` is on, since the OpenAI format carries images as `input_image` parts. Passing `input` to `litellm.systemone` raises a `BadRequestError` that points at `litellm.decisions`. Passing `state` to `litellm.decisions` still works for existing callers, it sends the System One format and emits a `UserWarning` that points at `litellm.systemone`. A model whose prefix is not one of the supported providers fails with a `BadRequestError` that lists the supported ones.
+All four functions also accept `safety_identifier`, `api_key`, `api_base`, `timeout`, `custom_llm_provider` and `extra_headers`. `litellm.systemone` and `litellm.asystemone` also take `images`, a list of image URLs or data URLs, and `assets`, TypeSafe's images keyed by reference string. Passing `images` to `litellm.decisions` raises a `BadRequestError` unless `drop_params` is on, since the OpenAI format carries images as `input_image` parts. Passing `input` to `litellm.systemone` raises a `BadRequestError` that points at `litellm.decisions`. Passing `state` to `litellm.decisions` still works for existing callers, it sends the System One format and emits a `UserWarning` that points at `litellm.systemone`. A model whose prefix is not one of the supported providers fails with a `BadRequestError` that lists the supported ones.
 
 Through the Router the same split applies: `router.decisions` and `router.adecisions` take the OpenAI shape, `router.systemone` and `router.asystemone` take the System One shape. On the proxy, `/v1/systemone` requests are logged with call type `asystemone` and `/v1/decisions` requests with `adecisions`.
 
