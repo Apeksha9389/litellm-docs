@@ -239,7 +239,7 @@ Contact me at [EMAIL_REDACTED]
 - **`during_call`** - Run during streaming, filters each chunk in real-time
 - **`logging_only`** - Scan the logged request and response after the call without changing what the client receives
 
-In `logging_only` mode the filter only observes. Every match is recorded in the request's guardrail information on the [Logs](/docs/proxy/ui_logs) page, whatever its action. A `BLOCK` match is recorded with status `guardrail_flagged` instead of rejecting the call, and the response is still scanned after a request match. A `MASK` match is recorded with its masked entity counts and the logged text is left as it was.
+In `logging_only` mode the filter only observes. Every match is recorded in the request's guardrail information on the [Logs](/docs/proxy/ui_logs) page, whatever its action. A `BLOCK` match is recorded with status `guardrail_flagged` instead of rejecting the call, and the response is still scanned after a request match. A `MASK` match is recorded with its masked entity counts and the logged text is left as it was. Anything an enforcing mode would reject, such as a `MASK` match on a tool argument name that cannot be rewritten, is also recorded as `guardrail_flagged`.
 
 ```yaml
 guardrails:
