@@ -699,7 +699,7 @@ model_list:
 
 Available from v1.107.0.
 
-Some deployments accept only a few reasoning effort levels and answer 400 for the rest. List the levels a deployment accepts in `reasoning_effort_levels` under its `model_info`, and the proxy sends a declared level in place of any level the deployment does not accept. This applies on `/v1/chat/completions` (streaming included), `/v1/responses`, and `/v1/messages`, for every provider. Only the deployment's own declaration counts. The `reasoning_effort_levels` in the model cost map never rounds a request.
+Some deployments accept only a few reasoning effort levels and answer 400 for the rest. List the levels a deployment accepts in `reasoning_effort_levels` under its `model_info`, and the proxy sends a declared level in place of any level the deployment does not accept. This applies on `/v1/chat/completions` (streaming included), `/v1/responses`, and `/v1/messages`, for every provider. Only the deployment's own declaration turns this on. Mistral and Together AI keep mapping levels from the model cost map on their own, as they did before.
 
 ```yaml showLineNumbers title="config.yaml"
 model_list:
@@ -738,7 +738,7 @@ To round down on every deployment, set `reasoning_effort_rounding: down` under `
 
 A non-empty `reasoning_effort_levels` also lets a provider that does not otherwise accept `reasoning_effort` take it, which today means `azure_ai`. An empty list does not.
 
-On `/v1/messages`, which Claude Code and other Anthropic-format clients call, the effort derived from `thinking` or `output_config.effort` is rounded onto the declared levels the same way, so `xhigh` goes to `max` when `max` is declared. A `/v1/chat/completions` request that sends an Anthropic-style `thinking` budget is rounded too, on every provider. On adaptive Claude models the budget first becomes an effort through Claude's own mapping, and the caller's `thinking.display` is kept.
+On `/v1/messages`, which Claude Code and other Anthropic-format clients call, the effort derived from `thinking` or `output_config.effort` is rounded onto the declared levels the same way, so `xhigh` goes to `max` when `max` is declared. A `/v1/chat/completions` request that sends an Anthropic-style `thinking` budget is rounded too, on every provider. On adaptive Claude models the budget first becomes an effort through Claude's own mapping, and the caller's `thinking.display` is kept. A `budget_tokens` that is not a number answers 400, or is dropped with `drop_params: true`.
 
 Each change logs one INFO line in this shape.
 
