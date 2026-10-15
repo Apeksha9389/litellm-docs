@@ -360,13 +360,13 @@ Every question has a `type` and an optional `instructions` field. Extra fields o
 | `noul` | Optional object with `true` and `false` descriptions. A noul question needs `instructions` or `criteria` | `noul`: probability that the answer is true |
 | `choice` | Required object mapping 1 to 255 labels to descriptions | `choice`, `confidence`, `probabilities` per label |
 | `score` | Required array of 1 to 10 levels, lowest first | `score` (0 to levels - 1), `confidence`, `legend`, `probabilities` per level |
-| `box` | None. TypeSafe `jev-1.14.0` and `jev-preview` only | `box` with `top`, `bottom`, `left` and `right` edges as fractions of the image height and width, and `confidence`, which can be `null` |
+| `box` | None. Models with `supports_box_questions`, today TypeSafe `jev-1.14.0` and `jev-preview` | `box` with `top`, `bottom`, `left` and `right` edges as fractions of the image height and width, and `confidence`, which can be `null` |
 
 On both routes, requests that break these rules, such as no questions at all, duplicate choice values or a `score` question with 11 levels, are rejected by LiteLLM with a 400 before any provider is called
 
 ### TypeSafe images and box questions
 
-Jev 1.14 reads images and answers `box` questions, which find where something is in an image. Both are TypeSafe "danger zone" features, so TypeSafe only accepts them when the request carries the `TypeSafe-Danger-Zone-Images: true` header. LiteLLM does not add that header for you. Send it in the request body as `extra_headers`, or set it once on the deployment under `litellm_params.extra_headers`. A plain HTTP header on your request to the proxy is not forwarded to TypeSafe.
+Jev 1.14 reads images and answers `box` questions, which find where something is in an image. Both are TypeSafe "danger zone" features, so TypeSafe only accepts them when the request carries the `TypeSafe-Danger-Zone-Images: true` header. LiteLLM does not add that header for you. Send it as a normal HTTP header on your request to the proxy, which forwards `TypeSafe-Danger-Zone-*` headers to TypeSafe deployments only, or set it once on the deployment under `litellm_params.extra_headers`. Without the header LiteLLM treats `assets` and image input like any provider that cannot read images, so the request gets a 400, or the images are dropped under `drop_params`.
 
 Each image goes in `assets` under a reference string of your choosing, and that same string has to appear somewhere in `state`, a question's `instructions` or its `criteria`, where TypeSafe swaps it for the image. An asset is `{"type": "image", "format": "png", "data_base64": "..."}`, where `format` is `png`, `jpg` or `jpeg`. A reference is 1 to 1024 bytes and cannot be blank. A random UUID per image is the safest choice, because references are matched as plain text.
 
@@ -374,6 +374,7 @@ Each image goes in `assets` under a reference string of your choosing, and that 
 curl -X POST 'http://0.0.0.0:4000/v1/systemone' \
 -H "Authorization: Bearer $LITELLM_API_KEY" \
 -H 'Content-Type: application/json' \
+-H 'TypeSafe-Danger-Zone-Images: true' \
 -d '{
   "model": "jev-1.14",
   "state": {"photo": "img-7f3a"},
@@ -381,8 +382,7 @@ curl -X POST 'http://0.0.0.0:4000/v1/systemone' \
     "square": {"type": "box", "instructions": "the red square in `photo`"},
     "has_square": {"type": "noul", "instructions": "Is there a red square in `photo`?"}
   },
-  "assets": {"img-7f3a": {"type": "image", "format": "png", "data_base64": "<base64 PNG>"}},
-  "extra_headers": {"TypeSafe-Danger-Zone-Images": "true"}
+  "assets": {"img-7f3a": {"type": "image", "format": "png", "data_base64": "<base64 PNG>"}}
 }'
 ```
 
@@ -399,7 +399,7 @@ Response
 }
 ```
 
-Without the header TypeSafe answers 400 with `Images are experimental. Send the header TypeSafe-Danger-Zone-Images: true to use them.` Long context works the same way: send `TypeSafe-Danger-Zone-Long-Context: true` in `extra_headers` to raise both context limits to 262k tokens. Other providers do not take `assets` or `box` questions, so LiteLLM rejects those requests with a 400 before calling them. In the SDK, pass `assets={...}` and `extra_headers={...}` to `litellm.systemone`.
+`/v1/decisions` works too: an `input_image` part becomes a TypeSafe asset referenced in the state. Long context works the same way: send `TypeSafe-Danger-Zone-Long-Context: true` to raise both context limits to 262k tokens. A `box` question to `jev-1.13.0` or `jev-latest`, or to another provider, and `assets` to a provider that cannot read them, get a 400 before the provider is called, or are dropped under `drop_params`. In the SDK, pass `assets={...}` and `extra_headers={...}` to `litellm.systemone`.
 
 ## SDK usage
 
