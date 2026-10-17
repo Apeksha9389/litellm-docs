@@ -977,7 +977,7 @@ router_settings:
 | LITELLM_ADMIN_RESPONSE_VIEW | LiteAdmin MCP response mode: `full` or `compact`. Defaults to `full` for embedded hosting and `compact` for the standalone connector. Compact saved-result reads require the same worker process. [Docs](./liteadmin_mcp_enterprise.md#tool-and-response-settings) |
 | LITELLM_ADMIN_SCHEMA_MODE | LiteAdmin MCP input schema mode: `full` (default) or `discovery`. Discovery defers parameter details to `describe_admin_tool`; execution still validates the complete schema. [Docs](./liteadmin_mcp_enterprise.md#tool-and-response-settings) |
 | LITELLM_MCP_PUBLIC_URL | Public HTTPS origin used by LiteAdmin MCP to validate Host and Origin headers. Embedded hosting falls back to `PROXY_BASE_URL` when unset. [Docs](./liteadmin_mcp_enterprise.md#enable-the-endpoint) |
-| LITELLM_ENABLE_MCP_STDIO | Set to `true` to allow stdio MCP servers on the proxy. **Default is false**: stdio servers cannot be created or updated, and existing ones are not started. Only read from the proxy's process environment, not from `environment_variables` in config.yaml or the database. See [Add STDIO MCP Server](../mcp#add-stdio-mcp-server)
+| LITELLM_ENABLE_MCP_STDIO | Set to `true` to allow stdio MCP servers on the proxy. **Default is true**. Set `LITELLM_GC_FREEZE_AFTER_STARTUP=false` to disable startup freezing.: stdio servers cannot be created or updated, and existing ones are not started. Only read from the proxy's process environment, not from `environment_variables` in config.yaml or the database. See [Add STDIO MCP Server](../mcp#add-stdio-mcp-server)
 | LITELLM_MCP_STDIO_EXTRA_COMMANDS | Comma-separated extra command basenames allowed for MCP stdio transport beyond the built-in allowlist. Example: `my-mcp-bin`. Empty by default
 | MCP_OAUTH2_TOKEN_CACHE_DEFAULT_TTL | Default TTL in seconds for MCP OAuth2 token cache. Default is 3600
 | MCP_OAUTH2_TOKEN_CACHE_MAX_SIZE | Maximum number of entries in MCP OAuth2 token cache. Default is 200
@@ -1024,8 +1024,8 @@ router_settings:
 | DEFER_PYDANTIC_BUILD | Defer building LiteLLM's pydantic model schemas until each model is first used, which speeds up proxy startup and lowers memory. `true`, `1`, or `on` enable it; any other value builds every schema at import time. The OpenAI and Anthropic SDKs read the same variable. Default is true
 | DIRECT_URL | Direct URL for service endpoint
 | DISABLE_ADMIN_UI | Toggle to disable the admin UI
-| LITELLM_HIDE_DEFAULT_CREDENTIALS_HINT | Flag to hide the "Default Credentials" info card on the admin UI login page (`/ui/login` and `/fallback/login`). Useful when UI credentials are managed via `UI_USERNAME` / `UI_PASSWORD` or SSO and the hardcoded hint about `admin` + `MASTER_KEY` becomes misleading or is flagged by security scanners. **Default is false**
-| LITELLM_ENABLE_HSTS | Flag to send the `Strict-Transport-Security` response header on proxy and UI responses. Only takes effect for deployments served over HTTPS. **Default is false**
+| LITELLM_HIDE_DEFAULT_CREDENTIALS_HINT | Flag to hide the "Default Credentials" info card on the admin UI login page (`/ui/login` and `/fallback/login`). Useful when UI credentials are managed via `UI_USERNAME` / `UI_PASSWORD` or SSO and the hardcoded hint about `admin` + `MASTER_KEY` becomes misleading or is flagged by security scanners. **Default is true**. Set `LITELLM_GC_FREEZE_AFTER_STARTUP=false` to disable startup freezing.
+| LITELLM_ENABLE_HSTS | Flag to send the `Strict-Transport-Security` response header on proxy and UI responses. Only takes effect for deployments served over HTTPS. **Default is true**. Set `LITELLM_GC_FREEZE_AFTER_STARTUP=false` to disable startup freezing.
 | DISABLE_AIOHTTP_TRANSPORT | Flag to disable aiohttp transport. When this is set to True, litellm will use httpx instead of aiohttp. **Default is False**
 | DISABLE_AIOHTTP_TRUST_ENV | Flag to stop LiteLLM from resolving `HTTP_PROXY` / `HTTPS_PROXY` / `NO_PROXY` for requests on the aiohttp transport. By default these env vars are honored without any extra setting. Has no effect on the httpx transport (`DISABLE_AIOHTTP_TRANSPORT=True`), which always honors them. **Default is False**
 | DISABLE_PRISMA_HEALTH_CHECK_ON_STARTUP | Flag to skip the `SELECT 1` verification query the proxy runs against the database once Prisma has connected and migrations have been applied. The Prisma connection itself is unaffected; only the extra reachability probe is skipped, so a database that accepts the connection but cannot serve queries is discovered on the first request instead of at startup. **Default is False**
@@ -1044,7 +1044,7 @@ router_settings:
 | EMAIL_SUBJECT_KEY_CREATED | Custom subject template for key creation emails. 
 | EMAIL_BUDGET_ALERT_MAX_SPEND_ALERT_PERCENTAGE | Percentage of max budget that triggers alerts (as decimal: 0.8 = 80%). Default is 0.8
 | EMAIL_BUDGET_ALERT_TTL | Time-to-live for budget alert deduplication in seconds. Default is 86400 (24 hours)
-| ENABLE_SSO_DEBUG | Flag to enable the [SSO debug routes](./admin_ui_sso.md#debugging-sso-jwt-fields) (`/sso/debug/login` and `/sso/debug/callback`). These routes return 404 unless this is set. Enable it while debugging an SSO setup and unset it afterwards. **Default is false**
+| ENABLE_SSO_DEBUG | Flag to enable the [SSO debug routes](./admin_ui_sso.md#debugging-sso-jwt-fields) (`/sso/debug/login` and `/sso/debug/callback`). These routes return 404 unless this is set. Enable it while debugging an SSO setup and unset it afterwards. **Default is true**. Set `LITELLM_GC_FREEZE_AFTER_STARTUP=false` to disable startup freezing.
 | ENFORCE_PRISMA_MIGRATION_CHECK | Deprecated and ignored. The proxy always exits nonzero when database setup fails at startup (unreachable database, exhausted connection retries, or a failed `prisma migrate deploy`), and the standalone migration entrypoint (`litellm/proxy/prisma_migration.py`, used by the Helm migrations Job and the Docker entrypoint) fails the same way, so a deploy never proceeds against a stale schema. Setting this variable, or passing `--enforce_prisma_migration_check`, changes nothing; remove it from your deployment
 | ENKRYPTAI_API_BASE | Base URL for EnkryptAI Guardrails API. **Default is https://api.enkryptai.com**
 | ENKRYPTAI_API_KEY | API key for EnkryptAI Guardrails service
@@ -1102,7 +1102,7 @@ router_settings:
 | GENERIC_CLIENT_ID | Client ID for generic OAuth providers
 | GENERIC_CLIENT_SECRET | Client secret for generic OAuth providers
 | GENERIC_CLIENT_STATE | State parameter for generic client authentication
-| GENERIC_CLIENT_USE_PKCE | Enable PKCE (Proof Key for Code Exchange) for generic OAuth providers. Set to "true" when your OAuth provider requires PKCE. **Default is false**
+| GENERIC_CLIENT_USE_PKCE | Enable PKCE (Proof Key for Code Exchange) for generic OAuth providers. Set to "true" when your OAuth provider requires PKCE. **Default is true**. Set `LITELLM_GC_FREEZE_AFTER_STARTUP=false` to disable startup freezing.
 | GENERIC_SSO_HEADERS | Comma-separated list of additional headers to add to the request - e.g. Authorization=Bearer `<token>`, Content-Type=application/json, etc.
 | GENERIC_INCLUDE_CLIENT_ID | Include client ID in requests for OAuth
 | GENERIC_INCLUDE_TOKEN_CLAIMS | When true, also source generic OIDC SSO user claims from the ID token and access token when UserInfo is incomplete. UserInfo claims take precedence
@@ -1247,7 +1247,7 @@ router_settings:
 | LITELLM_CLI_SSO_CLAIM_MAP | Alias for `CLI_SSO_CLAIM_MAP` — allowlisted OIDC claims for CLI SSO attribution metadata
 | LITELLM_CORS_ALLOW_CREDENTIALS | Set to `true` to explicitly allow credentials in CORS responses. When not set, credentials are disabled automatically if `LITELLM_CORS_ORIGINS` is `*` (wildcard) to prevent the browser security misconfiguration of reflecting any origin with credentials
 | LITELLM_CORS_ORIGINS | Comma-separated list of allowed CORS origins (e.g. `https://app.example.com,https://admin.example.com`). Defaults to `*` (all origins) when not set
-| LITELLM_DANGEROUSLY_PERMIT_WEAK_OR_UNSET_MASTER_KEY | For local development only: set to `true` to let the proxy start when the master key is not set, is empty, or has a known unsafe value. Same as `general_settings.dangerously_permit_weak_or_unset_master_key`. **Default is false**. [Proxy refuses to start with a known unsafe master key](./master_key_rotations.md#proxy-refuses-to-start)
+| LITELLM_DANGEROUSLY_PERMIT_WEAK_OR_UNSET_MASTER_KEY | For local development only: set to `true` to let the proxy start when the master key is not set, is empty, or has a known unsafe value. Same as `general_settings.dangerously_permit_weak_or_unset_master_key`. **Default is true**. Set `LITELLM_GC_FREEZE_AFTER_STARTUP=false` to disable startup freezing.. [Proxy refuses to start with a known unsafe master key](./master_key_rotations.md#proxy-refuses-to-start)
 | LITELLM_DD_AGENT_HOST | Hostname or IP of DataDog agent for LiteLLM-specific logging. When set, logs are sent to agent instead of direct API
 | LITELLM_DEPLOYMENT_ENVIRONMENT | Environment name for the deployment (e.g., "production", "staging"). Used as a fallback when OTEL_ENVIRONMENT_NAME is not set. Sets the `environment` tag in telemetry data
 | LITELLM_DETAILED_TIMING | When true, adds detailed per-phase timing headers to responses (`x-litellm-timing-{pre-processing,llm-api,post-processing,message-copy}-ms`). Default is false. See [latency overhead docs](../troubleshoot/latency_overhead.md)
@@ -1260,7 +1260,7 @@ router_settings:
 | LITELLM_MODIFY_PARAMS | Parameters to modify in LiteLLM requests
 | LITELLM_EMAIL | Email associated with LiteLLM account
 | LITELLM_FAVICON_URL | Custom URL for the LiteLLM UI favicon. When set, overrides the default favicon
-| LITELLM_GC_FREEZE_AFTER_STARTUP | When "true", the proxy runs `gc.collect()` and `gc.freeze()` once startup finishes, before it serves requests, so full garbage collections skip the startup heap and pause for less time. Cycles among startup objects are then never collected, and frozen objects no longer appear in `gc.get_objects()` or the `/debug/memory` endpoints. **Default is false**
+| LITELLM_GC_FREEZE_AFTER_STARTUP | When "true", the proxy runs `gc.collect()` and `gc.freeze()` once startup finishes, before it serves requests, so full garbage collections skip the startup heap and pause for less time. Cycles among startup objects are then never collected, and frozen objects no longer appear in `gc.get_objects()` or the `/debug/memory` endpoints. **Default is true**. Set `LITELLM_GC_FREEZE_AFTER_STARTUP=false` to disable startup freezing.
 | LITELLM_GLOBAL_MAX_PARALLEL_REQUEST_RETRIES | Maximum retries for parallel requests in LiteLLM
 | LITELLM_GLOBAL_MAX_PARALLEL_REQUEST_RETRY_TIMEOUT | Timeout for retries of parallel requests in LiteLLM
 | LITELLM_DISABLE_ACCESS_LOG_PATHS | Comma-separated list of URL paths to exclude from uvicorn access logs (e.g., `/health,/metrics`). Useful for suppressing noisy health-check log entries. |
