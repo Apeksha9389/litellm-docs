@@ -144,6 +144,18 @@ proxy_config:
 helm install litellm oci://ghcr.io/berriai/litellm-helm -f values.yaml
 ```
 
+If the database takes short-lived tokens instead of a password (RDS or Aurora with IAM database authentication, Azure Database for PostgreSQL with Microsoft Entra ID), there is no password to put in `litellm-db`. Set `db.useIAMAuth: true` (or `db.useAzureEntraAuth: true`) with `db.username` and drop the `secret` block. The chart then sets `IAM_TOKEN_DB_AUTH` (or `AZURE_POSTGRESQL_AUTH`) and emits `DATABASE_HOST`, `DATABASE_PORT`, `DATABASE_USERNAME` and `DATABASE_NAME` instead of `DATABASE_PASSWORD` and `DATABASE_URL`, and the proxy, the migrations job and the collector sidecar each mint their own token at startup. The pod needs cloud credentials for that token, IRSA or Pod Identity on EKS and workload identity on AKS.
+
+```yaml title="values.yaml (RDS IAM)"
+db:
+  useExisting: true
+  deployStandalone: false
+  useIAMAuth: true
+  endpoint: "<postgres-endpoint>"
+  database: litellm
+  username: litellm_iam   # the role granted rds_iam
+```
+
 The chart lives at [`helm/litellm-helm`](https://github.com/BerriAI/litellm/tree/main/helm/litellm-helm); the published chart versions carry LiteLLM release numbers (for example `1.90.2`), and `helm show values oci://ghcr.io/berriai/litellm-helm` lists every knob. Beyond the values above it supports [autoscaling](#autoscaling) (`autoscaling.*` or `keda.*`), PodDisruptionBudgets (`pdb.*`), a Prometheus ServiceMonitor (`serviceMonitor.*`), read replica routing (`db.readReplicaUrl`, see [Database Read Replica](./db_read_replica.md)), graceful drain on shutdown (`lifecycle`), ArgoCD or Helm hooks for the migrations job (`migrationJob.hooks.*`, see [Helm PreSync hooks](./prod.md#run-migrations-from-the-helm-presync-hook)), and an optional [dedicated Prometheus metrics listener](./prometheus.md#isolate-prometheus-scraping-from-inference-traffic) configured through `metricsServer.*`.
 
 </TabItem>
@@ -402,6 +414,8 @@ The official modules deploy the full microservices stack (network, database, Red
 
 - [`BerriAI/litellm/aws`](https://registry.terraform.io/modules/BerriAI/litellm/aws/latest)
 - [`BerriAI/litellm/google`](https://registry.terraform.io/modules/BerriAI/litellm/google/latest)
+
+Each module version defaults the four component images (gateway, backend, UI, migrations) to the matching LiteLLM release, so upgrading LiteLLM is a bump of the module `version`. Set `image_tag` only to pin a different release, or `image_registry` to pull the same images from a mirror.
 
 ### 1-click deploy from Cloud Shell
 

@@ -46,7 +46,7 @@ const sidebars = {
             "tutorials/claude_code_autorouter",
             "tutorials/claude_responses_api",
             "tutorials/claude_code_okta_sso",
-            "tutorials/claude_code_gateway",
+            { type: "ref", id: "tutorials/claude_code_gateway", className: "sidebar-xlink" },
             "tutorials/claude_code_max_subscription",
             "tutorials/claude_code_byok",
             "tutorials/claude_code_customer_tracking",
@@ -62,38 +62,46 @@ const sidebars = {
           ]
         },
         {
-          type: "doc",
+          type: "ref",
           id: "tutorials/claude_desktop_cowork",
+          className: "sidebar-xlink",
           customProps: { icon: "/img/integrations/anthropic.png" },
         },
         {
-          type: "doc",
+          type: "ref",
           id: "tutorials/opencode_integration",
+          className: "sidebar-xlink",
           customProps: { icon: "/img/integrations/opencode.png" },
         },
         {
-          type: "doc",
+          type: "ref",
           id: "tutorials/openclaw_integration",
+          label: "OpenClaw",
+          className: "sidebar-xlink",
           customProps: { icon: "/img/integrations/openclaw.png" },
         },
         {
-          type: "doc",
+          type: "ref",
           id: "tutorials/cursor_integration",
+          className: "sidebar-xlink",
           customProps: { icon: "/img/integrations/cursor.png" },
         },
         {
-          type: "doc",
+          type: "ref",
           id: "tutorials/github_copilot_integration",
+          className: "sidebar-xlink",
           customProps: { icon: "/img/integrations/github-copilot.png" },
         },
         {
-          type: "doc",
+          type: "ref",
           id: "tutorials/litellm_gemini_cli",
+          className: "sidebar-xlink",
           customProps: { icon: "/img/integrations/google.png" },
         },
         {
-          type: "doc",
+          type: "ref",
           id: "tutorials/litellm_qwen_code_cli",
+          className: "sidebar-xlink",
           customProps: { icon: "/img/integrations/qwen.png" },
         },
         {
@@ -389,6 +397,7 @@ const sidebars = {
           items: [
             "proxy/deploy",
             "proxy/prod",
+            "proxy/upgrade_guide",
             "proxy/health",
             {
               type: "category",
@@ -455,22 +464,110 @@ const sidebars = {
           label: "Client Setup",
           items: [
             "proxy/client_setup/overview",
-            "proxy/client_setup/claude_code",
-            "proxy/client_setup/claude_desktop",
-            "proxy/client_setup/codex_chatgpt_desktop",
-            "proxy/client_setup/codex_cli",
-            "proxy/user_keys",
-            "proxy/request_headers",
-            "proxy/response_headers",
-            "proxy/forward_client_headers",
-            "proxy/clientside_auth",
-            "proxy/model_discovery",
             {
               type: "category",
-              label: "Enterprise sign-in and billing",
+              label: "Claude",
               items: [
-                { type: "ref", id: "tutorials/claude_code_gateway", label: "Claude Code Gateway", className: "sidebar-xlink" },
-                { type: "ref", id: "tutorials/claude_desktop_cowork", label: "Claude Desktop Cowork", className: "sidebar-xlink" },
+                {
+                  type: "category",
+                  label: "Desktop & Cowork",
+                  items: [
+                    { type: "doc", id: "tutorials/claude_desktop_cowork", label: "SSO", className: "sidebar-enterprise" },
+                    { type: "doc", id: "proxy/client_setup/claude_desktop", label: "Virtual keys" },
+                  ],
+                },
+                {
+                  type: "category",
+                  label: "Code",
+                  items: [
+                    { type: "doc", id: "tutorials/claude_code_gateway", label: "SSO", className: "sidebar-enterprise" },
+                    { type: "doc", id: "proxy/client_setup/claude_code", label: "Virtual keys" },
+                  ],
+                },
+              ],
+            },
+            {
+              type: "category",
+              label: "Codex",
+              items: [
+                {
+                  type: "category",
+                  label: "Desktop",
+                  items: [
+                    { type: "doc", id: "proxy/client_setup/codex_chatgpt_desktop_sso", label: "SSO", className: "sidebar-enterprise" },
+                    { type: "doc", id: "proxy/client_setup/codex_chatgpt_desktop", label: "Virtual keys" },
+                  ],
+                },
+                {
+                  type: "category",
+                  label: "CLI",
+                  items: [
+                    { type: "doc", id: "proxy/client_setup/codex_cli_sso", label: "SSO", className: "sidebar-enterprise" },
+                    { type: "doc", id: "proxy/client_setup/codex_cli", label: "Virtual keys" },
+                  ],
+                },
+              ],
+            },
+            {
+              type: "category",
+              label: "Hermes",
+              items: [
+                {
+                  type: "category",
+                  label: "CLI",
+                  items: [
+                    { type: "doc", id: "proxy/client_setup/hermes_sso", label: "SSO", className: "sidebar-enterprise" },
+                    { type: "doc", id: "proxy/client_setup/hermes", label: "Virtual keys" },
+                  ],
+                },
+              ],
+            },
+            {
+              type: "category",
+              label: "Cursor",
+              items: [{ type: "doc", id: "tutorials/cursor_integration", label: "Setup" }],
+            },
+            {
+              type: "category",
+              label: "Gemini CLI",
+              items: [{ type: "doc", id: "tutorials/litellm_gemini_cli", label: "Setup" }],
+            },
+            {
+              type: "category",
+              label: "GitHub Copilot",
+              items: [{ type: "doc", id: "tutorials/github_copilot_integration", label: "Setup" }],
+            },
+            {
+              type: "category",
+              label: "OpenClaw",
+              items: [{ type: "doc", id: "tutorials/openclaw_integration", label: "Setup" }],
+            },
+            {
+              type: "category",
+              label: "OpenCode",
+              items: [{ type: "doc", id: "tutorials/opencode_integration", label: "Setup" }],
+            },
+            {
+              type: "category",
+              label: "Qwen Code",
+              items: [{ type: "doc", id: "tutorials/litellm_qwen_code_cli", label: "Setup" }],
+            },
+            {
+              type: "category",
+              label: "Shared configuration",
+              items: [
+                "proxy/user_keys",
+                "proxy/request_headers",
+                "proxy/response_headers",
+                "proxy/forward_client_headers",
+                "proxy/clientside_auth",
+                "proxy/model_discovery",
+              ],
+            },
+            {
+              type: "category",
+              label: "Additional sign-in and billing",
+              items: [
                 { type: "ref", id: "proxy/cli_sso", label: "CLI SSO", className: "sidebar-xlink" },
                 { type: "ref", id: "tutorials/claude_code_okta_sso", label: "Claude Code Okta SSO", className: "sidebar-xlink" },
                 { type: "ref", id: "tutorials/claude_code_byok", label: "Claude Code BYOK", className: "sidebar-xlink" },
@@ -504,6 +601,15 @@ const sidebars = {
             "proxy/jwt_auth_arch",
             "oidc",
             {
+              type: "category",
+              label: "ID-JAG",
+              items: [
+                { type: "doc", id: "proxy/id_jag/overview", className: "sidebar-enterprise" },
+                { type: "doc", id: "proxy/id_jag/resource_app", className: "sidebar-enterprise" },
+                { type: "doc", id: "proxy/id_jag/requesting_app", className: "sidebar-enterprise" },
+              ],
+            },
+            {
               type: "doc",
               id: "proxy/identity_provisioning",
               label: "Provisioning & Keys",
@@ -513,7 +619,7 @@ const sidebars = {
             { type: "doc", id: "proxy/ip_address", className: "sidebar-enterprise" },
             { type: "doc", id: "proxy/public_routes", className: "sidebar-enterprise" },
             "proxy/master_key_rotations",
-            { type: "ref", id: "proxy/multiple_admins", label: "Audit Logs", className: "sidebar-enterprise" },
+            { type: "ref", id: "proxy/audit_logs", label: "Audit Logs", className: "sidebar-enterprise" },
           ],
         },
         {
@@ -522,6 +628,7 @@ const sidebars = {
           items: [
             { type: "html", value: "Essential", className: "sidebar-group-label", defaultStyle: true },
             "proxy/cost_tracking",
+            "proxy/model_cost_map",
             "proxy/request_tags",
             "proxy/billing",
             "proxy/custom_pricing",
@@ -1009,6 +1116,7 @@ const sidebars = {
       items: [
         { type: "html", value: "Load balancing", className: "sidebar-group-label", defaultStyle: true },
         "routing",
+        "proxy/cache_aware_routing",
         "wildcard_routing",
         "proxy/health_check_routing",
         "scheduler",
@@ -1091,6 +1199,16 @@ const sidebars = {
         "completion/prompt_caching",
         "completion/prefix",
         "completion/predict_outputs",
+      ],
+    },
+    {
+      type: "category",
+      label: "Decision Models",
+      link: { type: "doc", id: "decisions/index" },
+      items: [
+        "decisions/providers",
+        "decisions/benchmark",
+        "decisions/admin_ui",
       ],
     },
     {
@@ -1237,7 +1355,18 @@ const sidebars = {
         },
         "count_tokens",
         "anthropic_count_tokens",
-        "decisions",
+        {
+          type: "category",
+          label: "/v1/decisions, /v1/systemone",
+          items: [
+            { type: "link", label: "Decision Models overview", href: "/docs/decisions" },
+            "decisions/openai_format",
+            "decisions/systemone_format",
+            "decisions/typesafe_images",
+            "decisions/sdk",
+          ]
+        },
+        "extraction",
         "moderation",
         "ocr",
         {
@@ -1284,6 +1413,7 @@ const sidebars = {
         { type: "ref", id: "response_api" },
         "prompt_management",
         "response_api_compact",
+        "response_api_native_passthrough",
         {
           type: "category",
           label: "/search",
@@ -1305,6 +1435,7 @@ const sidebars = {
             "search/agentcore",
             "search/nimble",
             "search/bing_grounding",
+            "search/deepseek",
           ]
         },
         "skills",
@@ -1495,6 +1626,7 @@ const sidebars = {
           ] },
           "providers/hyperbolic",
           "providers/inception",
+          "providers/inferenceapis",
           "providers/jina_ai",
           "providers/lambda_ai",
           "providers/llamagate",
@@ -1508,11 +1640,13 @@ const sidebars = {
           "providers/nadir",
           "providers/nano-gpt",
           "providers/nebius",
+          "providers/neosantara",
           "providers/nlp_cloud",
           "providers/novita",
           { type: "doc", id: "providers/nscale", label: "Nscale (EU Sovereign)" },
           "providers/nvidia_riva",
           "providers/oci",
+          "providers/openinfer",
           "providers/ovhcloud",
           { type: "category", label: "Perplexity AI", items: [
             "providers/perplexity",
@@ -1538,6 +1672,7 @@ const sidebars = {
           "providers/scx_ai",
           "providers/snowflake",
           "providers/stability",
+          "providers/strands_decider",
           "providers/synthetic",
           "providers/tencent",
           "providers/tensormesh",
@@ -1595,6 +1730,7 @@ const sidebars = {
         "sdk_custom_pricing",
         "migration",
         { type: "ref", id: "data_security" },
+        "proxy/telemetry",
         { type: "ref", id: "proxy/security_encryption_faq" },
         "proxy/docker_image_security",
         "migration_policy",
@@ -1606,7 +1742,7 @@ const sidebars = {
         "load_test_rpm",
         {
           type: "category",
-          label: "❤️ 🚅 Projects built on LiteLLM",
+          label: "Projects built on LiteLLM",
           link: {
             type: "generated-index",
             title: "Projects built on LiteLLM",
@@ -1690,7 +1826,7 @@ const enterpriseSidebar = {
     { type: "doc", id: "enterprise/moving_from_oss", label: "Moving from OSS" },
     { type: "html", value: "Features", className: "sidebar-group-label", defaultStyle: true },
     { type: "link", label: "All Enterprise features", href: "/docs/enterprise#full-feature-list" },
-    { type: "doc", id: "proxy/multiple_admins", label: "Audit logs" },
+    { type: "doc", id: "proxy/audit_logs", label: "Audit logs" },
     { type: "html", value: "Security review", className: "sidebar-group-label", defaultStyle: true },
     { type: "doc", id: "enterprise/compliance", label: "Compliance and SOC 2 Type II" },
     { type: "doc", id: "data_security", label: "Data privacy and security" },

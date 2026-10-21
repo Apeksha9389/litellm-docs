@@ -35,9 +35,10 @@ const config = {
     defaultLocale: 'en',
     locales: ['en'],
   },
-  clientModules: [require.resolve('./src/clientModules/imageZoom.js'), require.resolve('./src/clientModules/gridMarks.js'), require.resolve('./src/clientModules/lensLegacyRedirect.js')],
+  clientModules: [require.resolve('./src/clientModules/imageZoom.js'), require.resolve('./src/clientModules/gridMarks.js'), require.resolve('./src/clientModules/lensLegacyRedirect.js'), require.resolve('./src/clientModules/decisionsLegacyRedirect.js')],
   plugins: [
     require('./plugins/litellm-stats'),
+    require('./plugins/release-feed'),
     require('./plugins/llms'),
     // vega-canvas tries to load the optional node `canvas` package during SSR.
     // Charts render as SVG, so resolve it to an empty module.
@@ -64,6 +65,7 @@ const config = {
           {from: '/docs/guides/security_network', to: '/docs/guides/security_settings'},
           {from: '/docs/guides/reliability_testing_spend', to: '/docs/completion/reliable_completions'},
           {from: '/docs/proxy/liteadmin_slack_native', to: '/docs/proxy/liteadmin_slack'},
+          {from: '/docs/proxy/multiple_admins', to: '/docs/proxy/audit_logs'},
           {from: '/docs/proxy/lens/coding_agents', to: '/docs/proxy/lens/coding-agents'},
           {
             from: '/docs/proxy/control_plane_and_data_plane',
@@ -245,19 +247,6 @@ const config = {
       },
     ],
 
-    () => ({
-      name: 'cripchat',
-      injectHtmlTags() {
-        return {
-          headTags: [
-            {
-              tagName: 'script',
-              innerHTML: `window.$crisp=[];window.CRISP_WEBSITE_ID="be07a4d6-dba0-4df7-961d-9302c86b7ebc";(function(){d=document;s=d.createElement("script");s.src="https://client.crisp.chat/l.js";s.async=1;d.getElementsByTagName("head")[0].appendChild(s);})();`,
-            },
-          ],
-        };
-      },
-    }),
     // PostHog product analytics. Same project as the Webflow marketing site
     // (www.litellm.ai), so a visitor moving between the two domains is one
     // person and one journey: persistence keeps a first-party cookie on
@@ -384,8 +373,13 @@ const config = {
       // Replace with your project's social card
       image: 'img/docusaurus-social-card.png',
       // The whole bar links to the page; the close button still works.
+      // Entries live in src/announcements.js and are rotated by
+      // src/theme/AnnouncementBar/Content, which also drops an entry once its
+      // expiresAt passes. `content` is required by the theme schema but is not
+      // rendered; it holds the evergreen entry so the config still reads true.
+      // Bump `id` to resurface the bar for readers who dismissed the last one.
       announcementBar: {
-        id: 'decisions_api_2026_10',
+        id: 'townhall_oct_2026_decisions_api',
         content:
           '<a class="announcement-link" href="/docs/decisions"><strong>Decisions API is here.</strong> Call Jev, Clef or any decision model through one /v1/decisions endpoint. &rarr;</a>',
         isCloseable: true,
@@ -443,21 +437,10 @@ const config = {
           { to: '/blog', label: 'Blog', position: 'left' },
           { to: '/rust-migration', label: 'Rust', position: 'left' },
           {
-            href: 'https://trust.litellm.ai/',
-            label: 'Trust Center',
-            position: 'right',
-          },
-          {
             href: 'https://github.com/BerriAI/litellm',
             position: 'right',
             className: 'header-github-link',
             'aria-label': 'GitHub repository',
-          },
-          {
-            href: 'https://www.litellm.ai/support',
-            position: 'right',
-            className: 'header-discord-link',
-            'aria-label': 'Discord / Slack community',
           },
         ],
       },
